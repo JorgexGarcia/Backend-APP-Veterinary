@@ -23,18 +23,15 @@ const UsuarioSchema = Schema ({
         type: String
     },
     rol: {
-        type: 'USER_ROLE' | 'ADMIN_ROLE' | 'BOSS_ROLE' | 'DOCTOR_ROLE',
-        required: true,
+        type: String,
         default: 'USER_ROLE'
     },
     auth: {
-        type: 'EMAIL' | 'GOOGLE',
-        default: 'EMAIL',
-        required: true
+        type: String,
+        default: 'EMAIL'
     },
-    list_animal: [{
-        id: {required:true,
-            type: Schema.Types.ObjectId,
+    list_pets: [{
+        id: {type: Schema.Types.ObjectId,
             ref: 'Pet'}
     }],
     birth_date: {
@@ -63,12 +60,10 @@ const UsuarioSchema = Schema ({
         required: true
     },
     comment: [{
-        type: String,
-        required: true
+        type: String
     }],
     promociones: [{
-        id: {required:true,
-            type: Schema.Types.ObjectId,
+        id: {type: Schema.Types.ObjectId,
             ref: 'Promocion'}
     }]
 });
