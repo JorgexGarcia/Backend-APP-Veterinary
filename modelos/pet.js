@@ -42,9 +42,9 @@ const PetSchema = Schema ({
     chronic: [{
         type: String
     }],
-    weight: {
+    weight: [{
         type: Number
-    },
+    }],
     raza: {
         required: true,
         type: Schema.Types.ObjectId,
