@@ -25,9 +25,9 @@ const ConsultaSchema = Schema ({
         url: {type: String, required: true}
     }],
     service: {
-        id: { required:true,
-            type: Schema.Types.ObjectId,
-            ref: 'Service'}
+        required:true,
+        type: Schema.Types.ObjectId,
+        ref: 'Service'
     },
     first_observation: {
         type: String
@@ -36,16 +36,14 @@ const ConsultaSchema = Schema ({
         type: String
     },
     treatment: [{
-        id: { required:true,
-            type: Schema.Types.ObjectId,
-            ref: 'Tratamiento'}
+        type: Schema.Types.ObjectId,
+        ref: 'Tratamiento'
     }],
     diagnostic: {
         type: String
     },
     finish: {
         type: Boolean,
-        required: true,
         default: false
     },
     date: {
