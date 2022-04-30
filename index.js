@@ -25,6 +25,9 @@ app.use('/api/consultas', require('./routes/consultas'));
 app.use('/api/promociones', require('./routes/promociones'));
 app.use('/api/consejos', require('./routes/consejos'));
 app.use('/api/animales', require('./routes/pets'));
+app.use('/api/productos', require('./routes/productos'));
+app.use('/api/servicios', require('./routes/services'));
+app.use('/api/tratamientos', require('./routes/tratamientos'));
 
 /*
 app.get('*', (req, res) => {

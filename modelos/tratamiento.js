@@ -22,6 +22,10 @@ const TratamientoSchema = Schema ({
         required:true,
         type: Schema.Types.ObjectId,
         ref: 'Usuario'
+    },
+    nombre: {
+        required: true,
+        type: String
     }
 });
 
