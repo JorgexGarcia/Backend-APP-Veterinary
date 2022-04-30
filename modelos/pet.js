@@ -28,7 +28,7 @@ const PetSchema = Schema ({
     },
     sex: {
         required: true,
-        type: 'Macho' | 'Hembra',
+        type: String,
     },
     sterilized: {
         required: true,
@@ -55,19 +55,16 @@ const PetSchema = Schema ({
         required: true
     },
     consultas: [{
-        required:true,
         type: Schema.Types.ObjectId,
         ref: 'Consulta'
     }],
     next_consulta: [{
-        required:true,
         type: Schema.Types.ObjectId,
         ref: 'Consulta'
     }],
     treatment: [{
-        id: { required: true,
-            type: Schema.Types.ObjectId,
-            ref: 'Tratamiento'}
+        type: Schema.Types.ObjectId,
+        ref: 'Tratamiento'
     }],
     comment: [{
         type: String,

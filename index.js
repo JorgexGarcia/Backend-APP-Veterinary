@@ -24,6 +24,7 @@ app.use('/api/usuarios', require('./routes/usuarios'));
 app.use('/api/consultas', require('./routes/consultas'));
 app.use('/api/promociones', require('./routes/promociones'));
 app.use('/api/consejos', require('./routes/consejos'));
+app.use('/api/animales', require('./routes/pets'));
 
 /*
 app.get('*', (req, res) => {
