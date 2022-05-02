@@ -2,11 +2,11 @@ const {Schema, model} = require('mongoose');
 
 const PetSchema = Schema ({
 
-    nombre: {
+    name: {
         type: String,
         required: true
     },
-    foto: {
+    img: {
         type: String
     },
     birth_date: {
@@ -67,8 +67,7 @@ const PetSchema = Schema ({
         ref: 'Tratamiento'
     }],
     comment: [{
-        type: String,
-        required: true
+        type: String
     }],
     create_Date: {
         type: Date,

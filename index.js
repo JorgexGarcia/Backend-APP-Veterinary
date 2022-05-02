@@ -28,6 +28,7 @@ app.use('/api/animales', require('./routes/pets'));
 app.use('/api/productos', require('./routes/productos'));
 app.use('/api/servicios', require('./routes/services'));
 app.use('/api/tratamientos', require('./routes/tratamientos'));
+app.use('/api/razas', require('./routes/razas'));
 
 /*
 app.get('*', (req, res) => {

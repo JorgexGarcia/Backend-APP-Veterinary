@@ -11,7 +11,8 @@ const ServiceSchema = Schema ({
         required: true
     },
     price: {
-        type: Number
+        type: Number,
+        required: true
     }
 });
 

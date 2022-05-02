@@ -2,11 +2,11 @@ const {Schema, model} = require('mongoose');
 
 const ProductoSchema = Schema ({
 
-    nombre: {
+    name: {
         type: String,
         required: true
     },
-    foto: {
+    img: {
         type: String
     },
     description: {

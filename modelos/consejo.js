@@ -6,7 +6,7 @@ const ConsejoSchema = Schema ({
         type: String,
         required: true
     },
-    foto: {
+    img: {
         type: String
     },
     content: {

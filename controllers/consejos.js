@@ -2,17 +2,23 @@ const Consejo = require('../modelos/consejo');
 
 const getConsejos = async (req,res) =>{
 
-    await Consejo.find().then( data => {
-            res.json({
+    try{
+
+        await Consejo.find().then( consejos => {
+            res.status(200).json({
                 ok: true,
-                consejo: data
+                msg: "Listado de consejos",
+                consejos
             })
-    }).catch(error => {
-        res.json({
+        });
+
+
+    }catch (error) {
+        res.status(500).json({
             ok: false,
-            error
-        })
-    });
+            msg: "Error inesperado...., llame a su administrador"
+        });
+    }
 
 }
 
@@ -20,30 +26,45 @@ const getOneConsejo = async (req,res)=>{
 
     const id = req.params.id;
 
-    await Consejo.findById(id).then( data => {
-        res.json({
-            ok: true,
-            consejo: data
-        })
-    }).catch(error => {
-        console.log('error');
-        res.json({
+    try{
+
+        await Consejo.findById(id).then( consejo => {
+            res.json({
+                ok: true,
+                msg: "Consejo",
+                consejo
+            });
+        });
+
+    }catch (error) {
+        res.status(500).json({
             ok: false,
-            error
-        })
-    });
+            msg: "Error inesperado...., llame a su administrador"
+        });
+    }
+
 }
 
 const createConsejo = async (req,res) =>{
 
-    const consejo = new Consejo (req.body);
+    try{
 
-    await consejo.save();
+        const consejo = new Consejo (req.body);
 
-    res.json({
-        ok: true,
-        consejo
-    })
+        await consejo.save();
+
+        res.status(201).json({
+            ok: true,
+            msg: 'Consejo creado',
+            consejo
+        })
+
+    }catch (error) {
+        res.status(500).json({
+            ok: false,
+            msg: "Error inesperado...., llame a su administrador"
+        });
+    }
 
 }
 
@@ -51,24 +72,47 @@ const updateConsejo = async (req,res) =>{
 
     const id = req.params.id;
 
-    const consejo = await Consejo.findByIdAndUpdate(id, req.body, {new: true});
+    try{
 
-    res.json({
-        ok: true,
-        consejo
-    })
+        await Consejo.findByIdAndUpdate(id, req.body, {new: true})
+            .then( consejo => {
+                res.status(201).json({
+                    ok: true,
+                    msg: 'Consejo actualizado',
+                    consejo
+                })
+            });
+
+    }catch (error) {
+        res.status(500).json({
+            ok: false,
+            msg: "Error inesperado...., llame a su administrador"
+        });
+    }
+
 }
 
 const deleteConsejo = async (req,res) =>{
 
     const id = req.params.id;
 
-    const consejo = await Consejo.findByIdAndDelete(id);
+    try{
 
-    res.json({
-        ok: true,
-        consejo
-    })
+        await Consejo.findByIdAndDelete(id).then( consejo => {
+            res.status(201).json({
+                ok: true,
+                msg: 'Consejo eliminado',
+                consejo
+            });
+        });
+
+    }catch (error) {
+        res.status(500).json({
+            ok: false,
+            msg: "Error inesperado...., llame a su administrador"
+        });
+    }
+
 }
 
 module.exports = {

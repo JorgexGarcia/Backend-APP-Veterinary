@@ -2,7 +2,7 @@ const {Schema, model} = require('mongoose');
 
 const RazaSchema = Schema ({
 
-    nombre: {
+    name: {
         type: String,
         required: true
     },

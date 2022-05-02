@@ -2,17 +2,23 @@ const Promocion = require('../modelos/promocion');
 
 const getPromociones = async (req,res) =>{
 
-    await Promocion.find().then( data => {
-            res.json({
+    try{
+
+        await Promocion.find().then( promociones => {
+            res.status(200).json({
                 ok: true,
-                promocion: data
+                msg: "Listado de promociones",
+                promociones
             })
-    }).catch(error => {
-        res.json({
+        });
+
+
+    }catch (error) {
+        res.status(500).json({
             ok: false,
-            error
-        })
-    });
+            msg: "Error inesperado...., llame a su administrador"
+        });
+    }
 
 }
 
@@ -20,30 +26,44 @@ const getOnePromocion = async (req,res)=>{
 
     const id = req.params.id;
 
-    await Promocion.findById(id).then( data => {
-        res.json({
-            ok: true,
-            promocion: data
-        })
-    }).catch(error => {
-        console.log('error');
-        res.json({
+    try{
+
+        await Promocion.findById(id).then( promocion => {
+            res.json({
+                ok: true,
+                msg: "Promoción",
+                promocion
+            });
+        });
+
+    }catch (error) {
+        res.status(500).json({
             ok: false,
-            error
-        })
-    });
+            msg: "Error inesperado...., llame a su administrador"
+        });
+    }
 }
 
 const createPromocion = async (req,res) =>{
 
-    const promocion = new Promocion (req.body);
+    try{
 
-    await promocion.save();
+        const promocion = new Promocion (req.body);
 
-    res.json({
-        ok: true,
-        promocion
-    })
+        await promocion.save();
+
+        res.status(201).json({
+            ok: true,
+            msg: 'Promoción creada',
+            promocion
+        })
+
+    }catch (error) {
+        res.status(500).json({
+            ok: false,
+            msg: "Error inesperado...., llame a su administrador"
+        });
+    }
 
 }
 
@@ -51,24 +71,47 @@ const updatePromocion = async (req,res) =>{
 
     const id = req.params.id;
 
-    const promocion = await Promocion.findByIdAndUpdate(id, req.body, {new: true});
+    try{
 
-    res.json({
-        ok: true,
-        promocion
-    })
+        await Promocion.findByIdAndUpdate(id, req.body, {new: true})
+            .then( promocion => {
+                res.status(201).json({
+                    ok: true,
+                    msg: 'Promoción actualizado',
+                    promocion
+                })
+            });
+
+    }catch (error) {
+        res.status(500).json({
+            ok: false,
+            msg: "Error inesperado...., llame a su administrador"
+        });
+    }
+
 }
 
 const deletePromocion = async (req,res) =>{
 
     const id = req.params.id;
 
-    const promocion = await Promocion.findByIdAndDelete(id);
+    try{
 
-    res.json({
-        ok: true,
-        promocion
-    })
+        await Promocion.findByIdAndDelete(id).then( promocion => {
+            res.status(201).json({
+                ok: true,
+                msg: 'Promoción eliminada',
+                promocion
+            });
+        });
+
+    }catch (error) {
+        res.status(500).json({
+            ok: false,
+            msg: "Error inesperado...., llame a su administrador"
+        });
+    }
+
 }
 
 module.exports = {

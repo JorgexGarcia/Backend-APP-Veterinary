@@ -1,14 +1,14 @@
-const Consulta = require('../modelos/consulta');
+const Raza = require('../modelos/raza');
 
-const getConsultas = async (req,res) =>{
+const getRazas = async (req,res) =>{
 
     try{
 
-        await Consulta.find().then( consultas => {
+        await Raza.find().then( raza => {
             res.status(200).json({
                 ok: true,
-                msg: "Listado de consultas",
-                consultas
+                msg: "Listado de razas",
+                raza
             })
         });
 
@@ -22,17 +22,17 @@ const getConsultas = async (req,res) =>{
 
 }
 
-const getOneConsulta = async (req,res)=>{
+const getOneRaza = async (req,res)=>{
 
     const id = req.params.id;
 
     try{
 
-        await Consulta.findById(id).then( consulta => {
+        await Raza.findById(id).then( raza => {
             res.json({
                 ok: true,
-                msg: "Consulta",
-                consulta
+                msg: "Raza",
+                raza
             });
         });
 
@@ -45,18 +45,18 @@ const getOneConsulta = async (req,res)=>{
 
 }
 
-const createConsulta = async (req,res) =>{
+const createRaza = async (req,res) =>{
 
     try{
 
-        const consulta = new Consulta (req.body);
+        const raza = new Raza (req.body);
 
-        await consulta.save();
+        await raza.save();
 
         res.status(201).json({
             ok: true,
-            msg: 'Consulta creada',
-            consulta
+            msg: 'Raza creada',
+            raza
         })
 
     }catch (error) {
@@ -68,18 +68,18 @@ const createConsulta = async (req,res) =>{
 
 }
 
-const updateConsulta = async (req,res) =>{
+const updateRaza = async (req,res) =>{
 
     const id = req.params.id;
 
     try{
 
-        await Consulta.findByIdAndUpdate(id, req.body, {new: true})
-            .then( consulta => {
+        await Raza.findByIdAndUpdate(id, req.body, {new: true})
+            .then( raza => {
                 res.status(201).json({
                     ok: true,
-                    msg: 'Consulta actualizada',
-                    consulta
+                    msg: 'Raza actualizada',
+                    raza
                 })
             });
 
@@ -92,17 +92,17 @@ const updateConsulta = async (req,res) =>{
 
 }
 
-const deleteConsulta = async (req,res) =>{
+const deleteRaza = async (req,res) =>{
 
     const id = req.params.id;
 
     try{
 
-        await Consulta.findByIdAndDelete(id).then( consulta => {
+        await Raza.findByIdAndDelete(id).then( raza => {
             res.status(201).json({
                 ok: true,
-                msg: 'Consulta eliminada',
-                consulta
+                msg: 'Raza eliminada',
+                raza
             });
         });
 
@@ -116,9 +116,9 @@ const deleteConsulta = async (req,res) =>{
 }
 
 module.exports = {
-    getConsultas,
-    getOneConsulta,
-    createConsulta,
-    updateConsulta,
-    deleteConsulta
+    getRazas,
+    getOneRaza,
+    createRaza,
+    updateRaza,
+    deleteRaza
 }

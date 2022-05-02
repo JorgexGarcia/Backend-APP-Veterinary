@@ -2,7 +2,7 @@ const {Schema, model} = require('mongoose');
 
 const PromocionSchema = Schema ({
 
-    nombre: {
+    name: {
         type: String,
         required: true
     },
@@ -10,7 +10,7 @@ const PromocionSchema = Schema ({
         type: String,
         required: true
     },
-    foto: {
+    img: {
         type: String
     },
     start_date: {

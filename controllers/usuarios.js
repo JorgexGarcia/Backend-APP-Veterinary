@@ -37,16 +37,44 @@ const getOneUsuarios = async (req,res)=>{
 
 const createUsuario = async (req,res) =>{
 
-    const {email} = req.body;
+    const {email, dni} = req.body;
 
-    const usuario = new Usuario (req.body);
+    try{
 
-    await usuario.save();
+        const existeEmail = await Usuario.findOne({email});
 
-    res.json({
-        ok: true,
-        usuario
-    })
+        if( existeEmail ){
+            return res.status(409).json({
+                ok: false,
+                msg: 'El correo ya está registrado'
+            });
+        }
+
+        const existeDni = await Usuario.findOne({dni});
+
+        if( existeDni ){
+            return res.status(409).json({
+                ok: false,
+                msg: 'El dni ya está registrado'
+            });
+        }
+
+        const usuario = new Usuario (req.body);
+
+        await usuario.save();
+
+        res.status(201).json({
+            ok: true,
+            msg: 'Usuario creado',
+            usuario
+        })
+
+    }catch (error) {
+        res.status(500).json({
+            ok: false,
+            msg: "Error inesperado...., llame a su administrador"
+        });
+    }
 
 }
 

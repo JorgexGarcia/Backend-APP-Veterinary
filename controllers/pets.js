@@ -2,18 +2,23 @@ const Pet = require('../modelos/pet');
 
 const getPets = async (req,res) =>{
 
-    await Pet.find().then( data => {
-            res.json({
+    try{
+
+        await Pet.find().then( pets => {
+            res.status(200).json({
                 ok: true,
-                pets: data
+                msg: "Listado de animales",
+                pets
             })
-    }).catch(error => {
-            console.log('error');
-        res.json({
+        });
+
+
+    }catch (error) {
+        res.status(500).json({
             ok: false,
-            error
-        })
-    });
+            msg: "Error inesperado...., llame a su administrador"
+        });
+    }
 
 }
 
@@ -21,30 +26,45 @@ const getOnePet = async (req,res)=>{
 
     const id = req.params.id;
 
-    await Pet.findById(id).then( data => {
-        res.json({
-            ok: true,
-            pet: data
-        })
-    }).catch(error => {
-        console.log('error');
-        res.json({
+    try{
+
+        await Pet.findById(id).then( pet => {
+            res.json({
+                ok: true,
+                msg: "Animal",
+                pet
+            });
+        });
+
+    }catch (error) {
+        res.status(500).json({
             ok: false,
-            error
-        })
-    });
+            msg: "Error inesperado...., llame a su administrador"
+        });
+    }
+
 }
 
 const createPet = async (req,res) =>{
 
-    const pet = new Pet (req.body);
+    try{
 
-    await pet.save();
+        const pet = new Pet (req.body);
 
-    res.json({
-        ok: true,
-        pet
-    })
+        await pet.save();
+
+        res.status(201).json({
+            ok: true,
+            msg: 'Animal creado',
+            pet
+        })
+
+    }catch (error) {
+        res.status(500).json({
+            ok: false,
+            msg: "Error inesperado...., llame a su administrador"
+        });
+    }
 
 }
 
@@ -52,24 +72,47 @@ const updatePet = async (req,res) =>{
 
     const id = req.params.id;
 
-    const pet = await Pet.findByIdAndUpdate(id, req.body, {new: true});
+    try{
 
-    res.json({
-        ok: true,
-        pet
-    })
+        await Pet.findByIdAndUpdate(id, req.body, {new: true})
+            .then( pet => {
+                res.status(201).json({
+                    ok: true,
+                    msg: 'Animal actualizado',
+                    pet
+                })
+            });
+
+    }catch (error) {
+        res.status(500).json({
+            ok: false,
+            msg: "Error inesperado...., llame a su administrador"
+        });
+    }
+
 }
 
 const deletePet = async (req,res) =>{
 
     const id = req.params.id;
 
-    const pet = await Pet.findByIdAndDelete(id);
+    try{
 
-    res.json({
-        ok: true,
-        pet
-    })
+        await Pet.findByIdAndDelete(id).then( pet => {
+            res.status(201).json({
+                ok: true,
+                msg: 'Animal eliminado',
+                pet
+            });
+        });
+
+    }catch (error) {
+        res.status(500).json({
+            ok: false,
+            msg: "Error inesperado...., llame a su administrador"
+        });
+    }
+
 }
 
 module.exports = {

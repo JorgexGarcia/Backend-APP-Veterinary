@@ -31,8 +31,8 @@ const UsuarioSchema = Schema ({
         default: 'EMAIL'
     },
     list_pets: [{
-        id: {type: Schema.Types.ObjectId,
-            ref: 'Pet'}
+        type: Schema.Types.ObjectId,
+        ref: 'Pet'
     }],
     birth_date: {
         type: Date,
@@ -63,8 +63,8 @@ const UsuarioSchema = Schema ({
         type: String
     }],
     promociones: [{
-        id: {type: Schema.Types.ObjectId,
-            ref: 'Promocion'}
+        type: Schema.Types.ObjectId,
+        ref: 'Promocion'
     }]
 });
 
