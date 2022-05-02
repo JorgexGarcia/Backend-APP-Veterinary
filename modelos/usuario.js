@@ -2,7 +2,7 @@ const {Schema, model} = require('mongoose');
 
 const UsuarioSchema = Schema ({
 
-    nombre: {
+    name: {
         type: String,
         required: true
     },
@@ -65,7 +65,21 @@ const UsuarioSchema = Schema ({
     promociones: [{
         type: Schema.Types.ObjectId,
         ref: 'Promocion'
-    }]
+    }],
+    active: {
+        type: Boolean,
+        default: true,
+    },
+    delete_date: {
+        type: Date
+    },
+    delete_user: {
+        type: Schema.Types.ObjectId,
+        ref: 'Usuario'
+    },
+    delete_reason: {
+        type: String
+    }
 });
 
 //Para cambiar el nombre a un atributo o no visualizar uno que no quieres

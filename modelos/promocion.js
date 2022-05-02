@@ -22,7 +22,7 @@ const PromocionSchema = Schema ({
         required: true
     }
 }, {
-    collection: 'Promociones'
+    collection: 'promociones'
 });
 
 //Para cambiar el nombre a un atributo o no visualizar uno que no quieres

@@ -29,6 +29,7 @@ app.use('/api/productos', require('./routes/productos'));
 app.use('/api/servicios', require('./routes/services'));
 app.use('/api/tratamientos', require('./routes/tratamientos'));
 app.use('/api/razas', require('./routes/razas'));
+app.use('/api/login', require('./routes/auth'));
 
 /*
 app.get('*', (req, res) => {
