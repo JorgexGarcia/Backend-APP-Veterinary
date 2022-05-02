@@ -3,11 +3,16 @@ const {getUsuarios, getOneUsuarios, deleteUsuario,
     createUsuario,updateUsuario } = require('../controllers/usuarios');
 const {validarCampos} = require('../middlewares/validar-campos')
 const {check} = require("express-validator");
+const {validarJWT} = require("../middlewares/validar-JWT");
 
 
 const router = Router();
 
-router.get('/', getUsuarios);
+router.get('/',
+    [
+        validarJWT
+    ],
+    getUsuarios);
 
 router.get('/:id', getOneUsuarios);
 

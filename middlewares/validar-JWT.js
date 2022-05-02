@@ -1,21 +1,16 @@
-const {validationResult} = require("express-validator");
+const {} = require();
 
 
-const validarCampos = (req,res, next) => {
+const validarJWT = (req, res, next) => {
 
-    const errores = validationResult( req );
+    const token = req.header('token');
 
-    if(!errores.isEmpty()){
-        return res.status(400).json({
-            ok: false,
-            msg: errores.mapped()
-        });
-    }
+    
 
     next();
 
 }
 
 module.exports = {
-    validarCampos
+    validarJWT
 }
