@@ -17,7 +17,8 @@ const getConsultas = async (req,res) =>{
     try{
 
         await Consulta.find()
-            .populate(['id_pet', 'id_user', 'service', 'treatment', 'delete_user'])
+            .populate(['id_pet', 'id_user', 'service',
+                'treatment', 'delete_user'])
             .then( consultas => {
             res.status(200).json({
                 ok: true,
@@ -54,7 +55,8 @@ const getOneConsulta = async (req,res)=>{
     try{
 
         await Consulta.findById(id)
-            .populate(['id_pet', 'id_user', 'service', 'treatment', 'delete_user'])
+            .populate(['id_pet', 'id_user', 'service',
+                'treatment', 'delete_user'])
             .then( consulta => {
             res.status(200).json({
                 ok: true,
@@ -75,6 +77,8 @@ const getOneConsulta = async (req,res)=>{
 /**
  * Método para crear una consulta.
  *  - Si eres Usuario no puedes acceder.
+ *  - Guardamos el usuario que creo la consulta.
+ *  - Introducimos la consulta en el array de próximas consultas del animal.
  */
 const createConsulta = async (req,res) =>{
 
@@ -97,8 +101,6 @@ const createConsulta = async (req,res) =>{
         const petParent = await Pet.findById(consulta.id_pet);
         petParent.next_queries.push(consulta.id);
 
-        console.log(petParent)
-
         await Pet.findByIdAndUpdate(consulta.id_pet, petParent);
 
         res.status(201).json({
@@ -119,6 +121,8 @@ const createConsulta = async (req,res) =>{
 /**
  * Método para actualizar una consulta.
  * - Si eres usuario no puedes acceder.
+ * - Si actualizamos la variable de la consulta de finalizada a true, quitamos la consulta
+ *      en el animal de próximas consultas a consultas ya finalizadas.
  */
 const updateConsulta = async (req,res) =>{
 
@@ -165,6 +169,8 @@ const updateConsulta = async (req,res) =>{
 /**
  * Método para actualizar una consulta.
  * - Si eres usuario no puedes acceder.
+ * - No eliminamos la consulta, la marcamos como no activa, guardamos la fecha,
+ *      motivo y usuario que la desea eliminar.
  */
 const deleteConsulta = async (req,res) =>{
 

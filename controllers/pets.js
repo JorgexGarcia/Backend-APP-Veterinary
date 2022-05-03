@@ -78,7 +78,9 @@ const getOnePet = async (req,res)=>{
  * Método para crear un animal.
  *  - Si eres Usuario no puedes acceder al método.
  *  - Comprobamos si ya hay un chip o un pasaporte registrado.
- *  - Si no lo tiene, le introducimos la concadenación del id del dueño con el nombre del animal.
+ *  - Si no lo tiene, le introducimos la concadenación del id del dueño
+ *          con el nombre del animal y la fecha.
+ *  - Si creamos el animal, introducimos en el dueño del animal la id en su lista
  */
 const createPet = async (req,res) =>{
 
@@ -233,6 +235,8 @@ const updatePet = async (req,res) =>{
 /**
  * Método para eliminar un animal.
  *  - Si eres Usuario no puedes acceder al método.
+ *  - No eliminamos el animal, lo marcamos como no activo, guardamos la fecha,
+ *      el motivo y el usuario que lo desea eliminar
  */
 const deletePet = async (req,res) =>{
 

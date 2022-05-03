@@ -143,6 +143,8 @@ const updateRaza = async (req,res) =>{
 /**
  * Método para borrar una raza.
  *  - Si eres Usuario no puedes acceder al método.
+ *  - No eliminamos la raza, lo marcamos como no activo, guardamos la fecha,
+ *      el motivo y el usuario que lo desea eliminar
  */
 const deleteRaza = async (req,res) =>{
 

@@ -59,6 +59,7 @@ const getOneConsejo = async (req,res)=>{
 /**
  * Método para crear un consejo.
  * - Si eres usuario no puedes acceder.
+ * - Guardamos el usuario que creo el consejo.
  */
 const createConsejo = async (req,res) =>{
 
@@ -96,6 +97,7 @@ const createConsejo = async (req,res) =>{
 /**
  * Método para actualizar un consejo.
  * - Si eres usuario no puedes acceder.
+ * - Guardamos el usuario que modifico el consejo.
  */
 const updateConsejo = async (req,res) =>{
 

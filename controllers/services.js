@@ -127,6 +127,8 @@ const updateService = async (req,res) =>{
 /**
  * Método para eliminar un servicio.
  *  - Sin eres usuario no puedes acceder al método.
+ *  - No eliminamos el servicio, lo marcamos como no activo, guardamos la fecha,
+ *      el motivo y el usuario que lo desea eliminar
  */
 const deleteService = async (req,res) =>{
 

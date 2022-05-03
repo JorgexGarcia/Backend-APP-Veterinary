@@ -127,6 +127,8 @@ const updatePromocion = async (req,res) =>{
 /**
  * Método para eliminar una promoción.
  *  - Si eres Usuario no puedes acceder al método.
+ *  - No eliminamos la promoción, lo marcamos como no activo, guardamos la fecha,
+ *      el motivo y el usuario que lo desea eliminar
  */
 const deletePromocion = async (req,res) =>{
 

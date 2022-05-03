@@ -1,4 +1,5 @@
 const Tratamiento = require('../modelos/tratamiento');
+const Pet = require("../modelos/pet");
 
 /**
  * Método para conseguir todos los tratamientos.
@@ -59,6 +60,7 @@ const getOneTratamiento = async (req,res)=>{
  * Método para crear un tratamiento según la información pasada en la petición.
  *  - Sin eres usuario no puedes acceder al método.
  *  - Introducimos el usuario que realiza la petición en el tratamiento.
+ *  - Introducimos la id en el apartado de tratamientos del animal.
  */
 const createTratamiento = async (req,res) =>{
 
@@ -77,6 +79,11 @@ const createTratamiento = async (req,res) =>{
         });
 
         await tratamiento.save();
+
+        const petParent = await Pet.findById(tratamiento.id_pet);
+        petParent.treatment.push(tratamiento.id);
+
+        await Pet.findByIdAndUpdate(tratamiento.id_pet, petParent);
 
         res.status(201).json({
             ok: true,
@@ -135,6 +142,9 @@ const updateTratamiento = async (req,res) =>{
 /**
  * Método para borrar un usuario.
  *  - Sin eres usuario no puedes acceder al método.
+ *  - No eliminamos el tratamiento, la marcamos como no activa, guardamos la fecha,
+ *      motivo y usuario que la desea eliminar.
+ *  - Eliminamos el tratamiento del animal
  */
 const deleteTratamiento = async (req,res) =>{
 
@@ -162,6 +172,11 @@ const deleteTratamiento = async (req,res) =>{
         data.delete_date = Date.now();
         data.delete_reason = req.body.reason || 'Sin motivo';
         data.delete_user = req.usuario.id;
+
+        const petParent = await Pet.findById(data.id_pet);
+        const num = petParent.treatment.indexOf(id);
+        petParent.treatment.splice(num, 1);
+        await Pet.findByIdAndUpdate(data.id_pet, petParent);
 
         await Tratamiento.findByIdAndUpdate(id, data, {new: true})
             .then( tratamiento => {

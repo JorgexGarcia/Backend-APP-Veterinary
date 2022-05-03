@@ -139,6 +139,8 @@ const updateProducto = async (req,res) =>{
 /**
  * Método para eliminar un producto.
  *  - Si eres Usuario no puedes acceder al método.
+ *  - No eliminamos el producto, lo marcamos como no activo, guardamos la fecha,
+ *      el motivo y el usuario que lo desea eliminar.
  */
 const deleteProducto = async (req,res) =>{
 
