@@ -1,5 +1,8 @@
 const Service = require('../modelos/service');
 
+/**
+ * Método para conseguir todos los servicios.
+ */
 const getServices = async (req,res) =>{
 
     try{
@@ -22,6 +25,9 @@ const getServices = async (req,res) =>{
 
 }
 
+/**
+ * Método para conseguir un servicio según su id enviada por la url.
+ */
 const getOneService = async (req,res)=>{
 
     const id = req.params.id;
@@ -29,7 +35,7 @@ const getOneService = async (req,res)=>{
     try{
 
         await Service.findById(id).then( servicio => {
-            res.json({
+            res.status(200).json({
                 ok: true,
                 msg: "Servicio",
                 servicio
@@ -45,15 +51,26 @@ const getOneService = async (req,res)=>{
 
 }
 
+/**
+ * Método para crear un servicio según la información pasada en la petición.
+ *  - Sin eres usuario no puedes acceder al método.
+ */
 const createService = async (req,res) =>{
 
     try{
+
+        if(req.usuario.rol === 'USER_ROLE'){
+            return res.status(401).json({
+                ok: false,
+                msg: 'Usuario sin permisos'
+            });
+        }
 
         const service = new Service (req.body);
 
         await service.save();
 
-        res.status(201).json({
+        res.status(200).json({
             ok: true,
             msg: 'Servicio creado',
             servicio: service
@@ -68,7 +85,18 @@ const createService = async (req,res) =>{
 
 }
 
+/**
+ * Método para actualizar un servicio según la información pasada en la petición.
+ *  - Sin eres usuario no puedes acceder al método.
+ */
 const updateService = async (req,res) =>{
+
+    if(req.usuario.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     const id = req.params.id;
 
@@ -92,7 +120,18 @@ const updateService = async (req,res) =>{
 
 }
 
+/**
+ * Método para eliminar un servicio.
+ *  - Sin eres usuario no puedes acceder al método.
+ */
 const deleteService = async (req,res) =>{
+
+    if(req.usuario.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     const id = req.params.id;
 

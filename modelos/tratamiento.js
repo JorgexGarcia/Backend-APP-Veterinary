@@ -19,11 +19,10 @@ const TratamientoSchema = Schema ({
         ref: 'Pet'
     },
     id_user:{
-        required:true,
         type: Schema.Types.ObjectId,
         ref: 'Usuario'
     },
-    nombre: {
+    name: {
         required: true,
         type: String
     }

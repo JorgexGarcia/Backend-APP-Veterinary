@@ -32,8 +32,7 @@ const PetSchema = Schema ({
     },
     sterilized: {
         required: true,
-        type: Boolean,
-        default: false
+        type: Boolean
     },
     color:{
         type: String,
@@ -45,20 +44,20 @@ const PetSchema = Schema ({
     weight: [{
         type: Number
     }],
-    raza: {
+    race: {
         required: true,
         type: Schema.Types.ObjectId,
         ref: 'Raza'
     },
-    tipo: {
+    type: {
         type: String,
         required: true
     },
-    consultas: [{
+    queries: [{
         type: Schema.Types.ObjectId,
         ref: 'Consulta'
     }],
-    next_consulta: [{
+    next_queries: [{
         type: Schema.Types.ObjectId,
         ref: 'Consulta'
     }],

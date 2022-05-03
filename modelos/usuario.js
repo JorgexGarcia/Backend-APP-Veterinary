@@ -6,7 +6,7 @@ const UsuarioSchema = Schema ({
         type: String,
         required: true
     },
-    apellidos:{
+    last_name:{
         type: String,
         required: true
     },
@@ -19,7 +19,7 @@ const UsuarioSchema = Schema ({
         type: String,
         required: true
     },
-    foto: {
+    img: {
         type: String
     },
     rol: {
@@ -62,7 +62,7 @@ const UsuarioSchema = Schema ({
     comment: [{
         type: String
     }],
-    promociones: [{
+    promotions: [{
         type: Schema.Types.ObjectId,
         ref: 'Promocion'
     }],

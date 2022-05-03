@@ -6,16 +6,28 @@ const {getConsultas,
         deleteConsulta} = require('../controllers/consultas');
 const {check} = require("express-validator");
 const {validarCampos} = require("../middlewares/validar-campos");
+const {validarJWT} = require("../middlewares/validar-JWT");
 
 const router = Router();
 
-router.get('/', getConsultas);
+router.get('/',
+    [
+        validarJWT
+    ],
+    getConsultas
+);
 
-router.get('/:id', getOneConsulta);
+router.get('/:id',
+    [
+            validarJWT
+    ],
+    getOneConsulta
+);
 
 router.post('/',
     [
-        check('tipo', 'El tipo tiene que ser obligatorio').not().isEmpty(),
+        validarJWT,
+        check('type', 'El tipo tiene que ser obligatorio').not().isEmpty(),
         check('id_pet', 'La id del animal tiene que ser obligatoria').not()
             .isEmpty()
             .isMongoId(),
@@ -25,8 +37,6 @@ router.post('/',
         check('description', 'La descripción tiene que ser obligatoria').not().isEmpty(),
         check('service', 'La id del servicio tiene que ser obligatoria').not()
             .isEmpty()
-            .isMongoId(),
-        check('treatment', 'La id del tratamiento tiene que ser válida').not()
             .isMongoId(),
         check('date', 'La fecha tiene que ser obligatoria').not().isEmpty(),
         validarCampos
@@ -36,7 +46,8 @@ router.post('/',
 
 router.put('/:id',
     [
-        check('tipo', 'El tipo tiene que ser obligatorio').not().isEmpty(),
+        validarJWT,
+        check('type', 'El tipo tiene que ser obligatorio').not().isEmpty(),
         check('id_pet', 'La id del animal tiene que ser obligatoria').not()
             .isEmpty()
             .isMongoId(),
@@ -47,14 +58,17 @@ router.put('/:id',
         check('service', 'La id del servicio tiene que ser obligatoria').not()
             .isEmpty()
             .isMongoId(),
-        check('treatment', 'La id del tratamiento tiene que ser válida').not()
-            .isMongoId(),
         check('date', 'La fecha tiene que ser obligatoria').not().isEmpty(),
         validarCampos
     ],
     updateConsulta
 );
 
-router.delete('/:id', deleteConsulta);
+router.delete('/:id',
+    [
+        validarJWT
+    ],
+    deleteConsulta
+);
 
 module.exports = router;

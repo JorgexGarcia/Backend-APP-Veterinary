@@ -1,5 +1,8 @@
 const Promocion = require('../modelos/promocion');
 
+/**
+ * Método para obtener todas las promociones.
+ */
 const getPromociones = async (req,res) =>{
 
     try{
@@ -22,6 +25,9 @@ const getPromociones = async (req,res) =>{
 
 }
 
+/**
+ * Método para obtener una promoción.
+ */
 const getOnePromocion = async (req,res)=>{
 
     const id = req.params.id;
@@ -29,7 +35,7 @@ const getOnePromocion = async (req,res)=>{
     try{
 
         await Promocion.findById(id).then( promocion => {
-            res.json({
+            res.status(200).json({
                 ok: true,
                 msg: "Promoción",
                 promocion
@@ -44,9 +50,20 @@ const getOnePromocion = async (req,res)=>{
     }
 }
 
+/**
+ * Método para crear una promoción.
+ *  - Si eres Usuario no puedes acceder al método.
+ */
 const createPromocion = async (req,res) =>{
 
     try{
+
+        if(req.usuario.rol === 'USER_ROLE'){
+            return res.status(401).json({
+                ok: false,
+                msg: 'Usuario sin permisos'
+            });
+        }
 
         const promocion = new Promocion (req.body);
 
@@ -61,13 +78,25 @@ const createPromocion = async (req,res) =>{
     }catch (error) {
         res.status(500).json({
             ok: false,
-            msg: "Error inesperado...., llame a su administrador"
+            msg: "Error inesperado...., llame a su administrador",
+            error
         });
     }
 
 }
 
+/**
+ * Método para actualizar una promoción.
+ *  - Si eres Usuario no puedes acceder al método.
+ */
 const updatePromocion = async (req,res) =>{
+
+    if(req.usuario.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     const id = req.params.id;
 
@@ -91,7 +120,18 @@ const updatePromocion = async (req,res) =>{
 
 }
 
+/**
+ * Método para eliminar una promoción.
+ *  - Si eres Usuario no puedes acceder al método.
+ */
 const deletePromocion = async (req,res) =>{
+
+    if(req.usuario.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     const id = req.params.id;
 

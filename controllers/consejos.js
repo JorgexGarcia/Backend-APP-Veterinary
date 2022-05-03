@@ -1,10 +1,16 @@
 const Consejo = require('../modelos/consejo');
 
+
+/**
+ * Método para obtener el listado de consejos
+ */
 const getConsejos = async (req,res) =>{
 
     try{
 
-        await Consejo.find().then( consejos => {
+        await Consejo.find()
+            .populate('id_user')
+            .then( consejos => {
             res.status(200).json({
                 ok: true,
                 msg: "Listado de consejos",
@@ -22,14 +28,19 @@ const getConsejos = async (req,res) =>{
 
 }
 
+/**
+ * Método para obtener un consejo
+ */
 const getOneConsejo = async (req,res)=>{
 
     const id = req.params.id;
 
     try{
 
-        await Consejo.findById(id).then( consejo => {
-            res.json({
+        await Consejo.findById(id)
+            .populate('id_user')
+            .then( consejo => {
+            res.status(200).json({
                 ok: true,
                 msg: "Consejo",
                 consejo
@@ -45,11 +56,25 @@ const getOneConsejo = async (req,res)=>{
 
 }
 
+/**
+ * Método para crear un consejo.
+ * - Si eres usuario no puedes acceder.
+ */
 const createConsejo = async (req,res) =>{
+
+    if(req.usuario.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     try{
 
-        const consejo = new Consejo (req.body);
+        const consejo = new Consejo ({
+            id_user: req.usuario.id,
+            ...req.body
+        });
 
         await consejo.save();
 
@@ -68,13 +93,27 @@ const createConsejo = async (req,res) =>{
 
 }
 
+/**
+ * Método para actualizar un consejo.
+ * - Si eres usuario no puedes acceder.
+ */
 const updateConsejo = async (req,res) =>{
+
+    if(req.usuario.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     const id = req.params.id;
 
     try{
 
-        await Consejo.findByIdAndUpdate(id, req.body, {new: true})
+        const data = req.body;
+        data.id_user = req.id;
+
+        await Consejo.findByIdAndUpdate(id, data, {new: true})
             .then( consejo => {
                 res.status(201).json({
                     ok: true,
@@ -92,7 +131,18 @@ const updateConsejo = async (req,res) =>{
 
 }
 
+/**
+ * Método para eliminar un consejo.
+ * - Si eres usuario no puedes acceder.
+ */
 const deleteConsejo = async (req,res) =>{
+
+    if(req.usuario.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     const id = req.params.id;
 

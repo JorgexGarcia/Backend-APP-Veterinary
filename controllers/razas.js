@@ -1,14 +1,25 @@
 const Raza = require('../modelos/raza');
 
+/**
+ * Método para obtener el listado de razas.
+ *  - Si eres Usuario no puedes acceder al método.
+ */
 const getRazas = async (req,res) =>{
 
     try{
 
-        await Raza.find().then( raza => {
+        if(req.usuario.rol === 'USER_ROLE'){
+            return res.status(401).json({
+                ok: false,
+                msg: 'Usuario sin permisos'
+            });
+        }
+
+        await Raza.find().then( razas => {
             res.status(200).json({
                 ok: true,
                 msg: "Listado de razas",
-                raza
+                razas
             })
         });
 
@@ -22,14 +33,25 @@ const getRazas = async (req,res) =>{
 
 }
 
+/**
+ * Método para obtener una raza.
+ *  - Si eres Usuario no puedes acceder al método.
+ */
 const getOneRaza = async (req,res)=>{
+
+    if(req.usuario.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     const id = req.params.id;
 
     try{
 
         await Raza.findById(id).then( raza => {
-            res.json({
+            res.status(200).json({
                 ok: true,
                 msg: "Raza",
                 raza
@@ -45,9 +67,20 @@ const getOneRaza = async (req,res)=>{
 
 }
 
+/**
+ * Método para crear una raza.
+ *  - Si eres Usuario no puedes acceder al método.
+ */
 const createRaza = async (req,res) =>{
 
     try{
+
+        if(req.usuario.rol === 'USER_ROLE'){
+            return res.status(401).json({
+                ok: false,
+                msg: 'Usuario sin permisos'
+            });
+        }
 
         const raza = new Raza (req.body);
 
@@ -68,7 +101,18 @@ const createRaza = async (req,res) =>{
 
 }
 
+/**
+ * Método para actualizar una raza.
+ *  - Si eres Usuario no puedes acceder al método.
+ */
 const updateRaza = async (req,res) =>{
+
+    if(req.usuario.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     const id = req.params.id;
 
@@ -92,7 +136,18 @@ const updateRaza = async (req,res) =>{
 
 }
 
+/**
+ * Método para borrar una raza.
+ *  - Si eres Usuario no puedes acceder al método.
+ */
 const deleteRaza = async (req,res) =>{
+
+    if(req.usuario.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     const id = req.params.id;
 

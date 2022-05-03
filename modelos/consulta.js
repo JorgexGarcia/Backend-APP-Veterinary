@@ -2,7 +2,7 @@ const {Schema, model} = require('mongoose');
 
 const ConsultaSchema = Schema ({
 
-    tipo: {
+    type: {
         type: String,
         required: true
     },
@@ -20,8 +20,8 @@ const ConsultaSchema = Schema ({
         type: String,
         required: true
     },
-    informes: [{
-        tipo: String,
+    reports: [{
+        type_report: {type: String},
         url: {type: String, required: true}
     }],
     service: {

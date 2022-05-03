@@ -2,23 +2,29 @@ const Usuario = require('../modelos/usuario');
 const bcrypt = require('bcryptjs');
 
 /**
- * Método para conseguir todos los usuarios
- * @param req
- * @param res
- * @returns {Promise<void>}
+ * Método para conseguir todos los usuarios.
+ *  - Sin eres usuario no puedes acceder al método
  */
 const getUsuarios = async (req,res) =>{
 
     try{
 
-        await Usuario.find().then( usuarios => {
-            res.status(200).json({
-                ok: true,
-                msg: "Listado de usuarios",
-                usuarios
-            })
-        });
-
+        if(req.usuario.rol === 'USER_ROLE'){
+            return res.status(401).json({
+                ok: false,
+                msg: 'Usuario sin permisos'
+            });
+        }else{
+            await Usuario.find()
+                .populate(['list_pets', 'promotions', 'delete_user'])
+                .then( usuarios => {
+                res.status(200).json({
+                    ok: true,
+                    msg: "Listado de usuarios",
+                    usuarios
+                })
+            });
+        }
 
     }catch (error) {
         res.status(500).json({
@@ -30,10 +36,8 @@ const getUsuarios = async (req,res) =>{
 }
 
 /**
- * Método para conseguir un usuario según su id enviada por la url
- * @param req
- * @param res
- * @returns {Promise<void>}
+ * Método para conseguir un usuario según su id enviada por la url.
+ *  - Sin eres usuario no puedes acceder al método a no ser que seas tu mismo.
  */
 const getOneUsuarios = async (req,res)=>{
 
@@ -41,13 +45,20 @@ const getOneUsuarios = async (req,res)=>{
 
     try{
 
-        await Usuario.findById(id).then( usuario => {
-            res.json({
-                ok: true,
-                msg: "Usuario",
-                usuario
-            })
-        });
+        if(req.usuario.rol === 'USER_ROLE' && req.usuario.id !== id){
+            return res.status(401).json({
+                ok: false,
+                msg: 'Usuario sin permisos'
+            });
+        }else{
+            await Usuario.findById(id).then( usuario => {
+                res.status(200).json({
+                    ok: true,
+                    msg: "Usuario",
+                    usuario
+                })
+            });
+        }
 
     }catch (error) {
         res.status(500).json({
@@ -60,17 +71,22 @@ const getOneUsuarios = async (req,res)=>{
 
 /**
  * Método para crear un usuario según la información pasada en la petición.
+ *  - Sin eres usuario no puedes acceder al método
  *  - Primero compruebo si ya hay un usuario con ese email:
  *      - Si ya tenemos uno , compruebo si esta eliminado:
  *          - Si no esta, indico al forntend que ya hay un asuario con ese email
  *          - Si esta, loo actualizo con la nueva información y lo marco como activo
  *  - Lo mismo con el dni
  *  - Si no esta el dni ni el email en la BD, creo un usuario nuevo.
- * @param req
- * @param res
- * @returns {Promise<*>}
  */
 const createUsuario = async (req,res) =>{
+
+    if(req.usuario.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     const {email, dni, password} = req.body;
 
@@ -133,7 +149,7 @@ const createUsuario = async (req,res) =>{
 
         await usuario.save();
 
-        res.status(201).json({
+        res.status(200).json({
             ok: true,
             msg: 'Usuario creado',
             usuario
@@ -150,20 +166,25 @@ const createUsuario = async (req,res) =>{
 
 /**
  * Método para actualizar un usuario.
+ *  - Sin eres usuario no puedes acceder al método a no ser que seas tu mismo.
  *  - Compruebo si el usuario esta en la BD, sino esta devuelvo un status 404
  *  - Si esta, compruebo que el nuevo email o dni no coincide con ningún otro en la BD
  *  - Si no coincide, actualizo el usuario.
  *  - No se puede actualizar:
  *      - password, auth, email, dni, active, delete_date, delete_user
- * @param req
- * @param res
- * @returns {Promise<*>}
  */
 const updateUsuario = async (req,res) =>{
 
     const id = req.params.id;
 
     try{
+
+        if(req.usuario.rol === 'USER_ROLE' && req.usuario.id !== id){
+            return res.status(401).json({
+                ok: false,
+                msg: 'Usuario sin permisos'
+            });
+        }
 
         const usuarioDB = await Usuario.findById(id);
 
@@ -219,14 +240,19 @@ const updateUsuario = async (req,res) =>{
 }
 
 /**
- * Método para eliminar un USUario
+ * Método para eliminar un Usuario.
+ *  - Sin eres usuario no puedes acceder al método
  *  - No eliminamos un usuario de la BD, sino que lo marcamos como que no esta activo.
  *  - También añadimos la fecha de la eliminación y quien lo elimino para llevar un control.
- * @param req
- * @param res
- * @returns {Promise<void>}
  */
 const deleteUsuario = async (req,res) =>{
+
+    if(req.usuario.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     const id = req.params.id;
 
@@ -244,8 +270,7 @@ const deleteUsuario = async (req,res) =>{
         usuarioDB.active = false;
         usuarioDB.delete_date = Date.now();
         usuarioDB.delete_reason = req.body.reason || 'Sin motivo';
-        //TODO
-        usuarioDB.delete_user = id;
+        usuarioDB.delete_user = req.usuario.id;
 
         await Usuario.findByIdAndUpdate(id, usuarioDB, {new: true}).then( usuario => {
             res.status(201).json({

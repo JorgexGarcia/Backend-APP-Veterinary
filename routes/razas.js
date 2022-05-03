@@ -6,14 +6,27 @@ const {getRazas,
     deleteRaza} = require('../controllers/razas');
 const {check} = require("express-validator");
 const {validarCampos} = require("../middlewares/validar-campos");
+const {validarJWT} = require("../middlewares/validar-JWT");
 
 const router = Router();
 
-router.get('/', getRazas);
+router.get('/',
+    [
+        validarJWT
+    ],
+    getRazas
+);
 
-router.get('/:id', getOneRaza);
+router.get('/:id',
+    [
+        validarJWT
+    ],
+    getOneRaza
+);
 
-router.post('/',[
+router.post('/',
+    [
+        validarJWT,
         check('name', 'El nombre es obligatorio').not().isEmpty(),
         check('tipo', 'El tipo es obligatorio').not().isEmpty(),
         validarCampos
@@ -22,6 +35,7 @@ router.post('/',[
 );
 router.put('/:id',
     [
+        validarJWT,
         check('name', 'El nombre es obligatorio').not().isEmpty(),
         check('tipo', 'El tipo es obligatorio').not().isEmpty(),
         validarCampos
@@ -29,6 +43,11 @@ router.put('/:id',
     updateRaza
 );
 
-router.delete('/:id', deleteRaza);
+router.delete('/:id',
+    [
+        validarJWT
+    ],
+    deleteRaza
+);
 
 module.exports = router;

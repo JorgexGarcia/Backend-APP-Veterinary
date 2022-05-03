@@ -1,10 +1,23 @@
 const Consulta = require('../modelos/consulta');
 
+/**
+ * Método para obtener todas las consultas.
+ *  - Si eres usuario no puedes acceder a este método.
+ */
 const getConsultas = async (req,res) =>{
+
+    if(req.usuario.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     try{
 
-        await Consulta.find().then( consultas => {
+        await Consulta.find()
+            .populate(['id_pet', 'id_user', 'service', 'treatment'])
+            .then( consultas => {
             res.status(200).json({
                 ok: true,
                 msg: "Listado de consultas",
@@ -22,14 +35,27 @@ const getConsultas = async (req,res) =>{
 
 }
 
+/**
+ * Método para obtener una consulta.
+ * - Si eres usuario no puedes acceder.
+ */
 const getOneConsulta = async (req,res)=>{
+
+    if(req.usuario.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     const id = req.params.id;
 
     try{
 
-        await Consulta.findById(id).then( consulta => {
-            res.json({
+        await Consulta.findById(id)
+            .populate(['id_pet', 'id_user', 'service', 'treatment'])
+            .then( consulta => {
+            res.status(200).json({
                 ok: true,
                 msg: "Consulta",
                 consulta
@@ -45,11 +71,25 @@ const getOneConsulta = async (req,res)=>{
 
 }
 
+/**
+ * Método para crear una consulta.
+ *  - Si eres Usuario no puedes acceder.
+ */
 const createConsulta = async (req,res) =>{
+
+    if(req.usuario.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     try{
 
-        const consulta = new Consulta (req.body);
+        const consulta = new Consulta ({
+            id_user: req.usuario.id,
+            ...req.body
+        });
 
         await consulta.save();
 
@@ -68,13 +108,27 @@ const createConsulta = async (req,res) =>{
 
 }
 
+/**
+ * Método para actualizar una consulta.
+ * - Si eres usuario no puedes acceder.
+ */
 const updateConsulta = async (req,res) =>{
+
+    if(req.usuario.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     const id = req.params.id;
 
     try{
 
-        await Consulta.findByIdAndUpdate(id, req.body, {new: true})
+        const data = req.body;
+        data.id_user = req.id;
+
+        await Consulta.findByIdAndUpdate(id, data, {new: true})
             .then( consulta => {
                 res.status(201).json({
                     ok: true,
@@ -92,7 +146,18 @@ const updateConsulta = async (req,res) =>{
 
 }
 
+/**
+ * Método para actualizar una consulta.
+ * - Si eres usuario no puedes acceder.
+ */
 const deleteConsulta = async (req,res) =>{
+
+    if(req.usuario.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     const id = req.params.id;
 

@@ -14,15 +14,20 @@ router.get('/',
     ],
     getUsuarios);
 
-router.get('/:id', getOneUsuarios);
+router.get('/:id',
+    [
+        validarJWT
+    ],
+    getOneUsuarios
+);
 
 router.post(
     '/',
     [
+        validarJWT,
         check('name','El nombre es obligatorio').not().isEmpty(),
-        check('apellidos','Los apellidos son obligatorios').not().isEmpty(),
-        check('email','El email es obligatorio').not().isEmpty(),
-        check('email','El email no es valido').isEmail(),
+        check('last_name','Los apellidos son obligatorios').not().isEmpty(),
+        check('email','El email no es valido').not().isEmpty().isEmail(),
         check('password','El password es obligatorio').not().isEmpty(),
         check('birth_date','La fecha de nacimiento es obligatorio').not().isEmpty(),
         check('dni','El DNI es obligatorio').not().isEmpty(),
@@ -30,10 +35,6 @@ router.post(
         check('province','La provincia es obligatorio').not().isEmpty(),
         check('city','La ciudad es obligatorio').not().isEmpty(),
         check('address','La dirección es obligatorio').not().isEmpty(),
-        check('promociones','La id de la promoción tiene que ser válida').not()
-            .isMongoId(),
-        check('list_pets','La id del animal tiene que ser válida').not()
-            .isMongoId(),
         validarCampos
     ],
     createUsuario
@@ -42,10 +43,10 @@ router.post(
 router.put(
     '/:id',
     [
-        check('nombre','El nombre es obligatorio').not().isEmpty(),
-        check('apellidos','Los apellidos son obligatorios').not().isEmpty(),
-        check('email','El email es obligatorio').not().isEmpty(),
-        check('email','El email no es valido').isEmail(),
+        validarJWT,
+        check('name','El nombre es obligatorio').not().isEmpty(),
+        check('last_name','Los apellidos son obligatorios').not().isEmpty(),
+        check('email','El email no es valido').not().isEmpty().isEmail(),
         check('password','El password es obligatorio').not().isEmpty(),
         check('birth_date','La fecha de nacimiento es obligatorio').not().isEmpty(),
         check('dni','El DNI es obligatorio').not().isEmpty(),
@@ -58,6 +59,11 @@ router.put(
     updateUsuario
 );
 
-router.delete('/:id', deleteUsuario);
+router.delete('/:id',
+    [
+            validarJWT
+    ],
+    deleteUsuario
+);
 
 module.exports = router;

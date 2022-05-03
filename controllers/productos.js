@@ -1,6 +1,17 @@
 const Producto = require('../modelos/producto');
 
+/**
+ * Método para obtener el listado de productos.
+ *  - Si eres Usuario no puedes acceder al método.
+ */
 const getProductos = async (req,res) =>{
+
+    if(req.usuario.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     try{
 
@@ -22,14 +33,25 @@ const getProductos = async (req,res) =>{
 
 }
 
+/**
+ * Método para obtener un producto.
+ *  - Si eres Usuario no puedes acceder al método.
+ */
 const getOneProducto = async (req,res)=>{
+
+    if(req.usuario.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     const id = req.params.id;
 
     try{
 
         await Producto.findById(id).then( producto => {
-            res.json({
+            res.status(200).json({
                 ok: true,
                 msg: "Producto",
                 producto
@@ -45,7 +67,18 @@ const getOneProducto = async (req,res)=>{
 
 }
 
+/**
+ * Método para crear un producto.
+ *  - Si eres Usuario no puedes acceder al método.
+ */
 const createProducto = async (req,res) =>{
+
+    if(req.usuario.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     try{
 
@@ -68,7 +101,18 @@ const createProducto = async (req,res) =>{
 
 }
 
+/**
+ * Método para actualizar un producto.
+ *  - Si eres Usuario no puedes acceder al método.
+ */
 const updateProducto = async (req,res) =>{
+
+    if(req.usuario.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     const id = req.params.id;
 
@@ -92,7 +136,18 @@ const updateProducto = async (req,res) =>{
 
 }
 
+/**
+ * Método para eliminar un producto.
+ *  - Si eres Usuario no puedes acceder al método.
+ */
 const deleteProducto = async (req,res) =>{
+
+    if(req.usuario.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     const id = req.params.id;
 
