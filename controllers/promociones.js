@@ -7,7 +7,9 @@ const getPromociones = async (req,res) =>{
 
     try{
 
-        await Promocion.find().then( promociones => {
+        await Promocion.find()
+            .populate('delete_user')
+            .then( promociones => {
             res.status(200).json({
                 ok: true,
                 msg: "Listado de promociones",
@@ -34,7 +36,9 @@ const getOnePromocion = async (req,res)=>{
 
     try{
 
-        await Promocion.findById(id).then( promocion => {
+        await Promocion.findById(id)
+            .populate('delete_user')
+            .then( promocion => {
             res.status(200).json({
                 ok: true,
                 msg: "Promoción",
@@ -137,7 +141,22 @@ const deletePromocion = async (req,res) =>{
 
     try{
 
-        await Promocion.findByIdAndDelete(id).then( promocion => {
+        const data = await Promocion.findById(id);
+
+        if(!data){
+            res.status(404).json({
+                ok: false,
+                msg: "No se encontro la promoción"
+            });
+        }
+
+        data.active = false;
+        data.delete_date = Date.now();
+        data.delete_reason = req.body.reason || 'Sin motivo';
+        data.delete_user = req.usuario.id;
+
+        await Promocion.findByIdAndUpdate(id, data, {new: true})
+            .then( promocion => {
             res.status(201).json({
                 ok: true,
                 msg: 'Promoción eliminada',

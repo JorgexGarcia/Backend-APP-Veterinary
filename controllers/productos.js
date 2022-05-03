@@ -153,7 +153,22 @@ const deleteProducto = async (req,res) =>{
 
     try{
 
-        await Producto.findByIdAndDelete(id).then( producto => {
+        const data = await Producto.findById(id);
+
+        if(!data){
+            res.status(404).json({
+                ok: false,
+                msg: "No se encontro el producto"
+            });
+        }
+
+        data.active = false;
+        data.delete_date = Date.now();
+        data.delete_reason = req.body.reason || 'Sin motivo';
+        data.delete_user = req.usuario.id;
+
+        await Producto.findByIdAndUpdate(id, data, {new: true})
+            .then( producto => {
             res.status(201).json({
                 ok: true,
                 msg: 'Producto eliminado',

@@ -7,7 +7,9 @@ const getServices = async (req,res) =>{
 
     try{
 
-        await Service.find().then( servicios => {
+        await Service.find()
+            .populate('delete_user')
+            .then( servicios => {
             res.status(200).json({
                 ok: true,
                 msg: "Listado de servicios",
@@ -34,7 +36,9 @@ const getOneService = async (req,res)=>{
 
     try{
 
-        await Service.findById(id).then( servicio => {
+        await Service.findById(id)
+            .populate('delete_user')
+            .then( servicio => {
             res.status(200).json({
                 ok: true,
                 msg: "Servicio",
@@ -137,7 +141,22 @@ const deleteService = async (req,res) =>{
 
     try{
 
-        await Service.findByIdAndDelete(id).then( servicio => {
+        const data = await Service.findById(id);
+
+        if(!data){
+            res.status(404).json({
+                ok: false,
+                msg: "No se encontro el servicio"
+            });
+        }
+
+        data.active = false;
+        data.delete_date = Date.now();
+        data.delete_reason = req.body.reason || 'Sin motivo';
+        data.delete_user = req.usuario.id;
+
+        await Service.findByIdAndUpdate(id, data, {new: true})
+            .then( servicio => {
             res.status(201).json({
                 ok: true,
                 msg: 'Servicio eliminado',

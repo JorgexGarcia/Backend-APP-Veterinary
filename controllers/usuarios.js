@@ -272,7 +272,8 @@ const deleteUsuario = async (req,res) =>{
         usuarioDB.delete_reason = req.body.reason || 'Sin motivo';
         usuarioDB.delete_user = req.usuario.id;
 
-        await Usuario.findByIdAndUpdate(id, usuarioDB, {new: true}).then( usuario => {
+        await Usuario.findByIdAndUpdate(id, usuarioDB, {new: true})
+            .then( usuario => {
             res.status(201).json({
                 ok: true,
                 msg: 'Usuario eliminado',

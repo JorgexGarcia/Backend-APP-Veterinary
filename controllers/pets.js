@@ -1,4 +1,5 @@
 const Pet = require('../modelos/pet');
+const Usuario = require("../modelos/usuario");
 
 /**
  * Método para obtener el listado de animales.
@@ -17,7 +18,7 @@ const getPets = async (req,res) =>{
 
         await Pet.find()
             .populate(['id_user','race', 'queries',
-                'next_queries', 'treatment'])
+                'next_queries', 'treatment', 'delete_user'])
             .then( pets => {
             res.status(200).json({
                 ok: true,
@@ -55,7 +56,7 @@ const getOnePet = async (req,res)=>{
 
         await Pet.findById(id)
             .populate(['id_user','race', 'queries',
-                'next_queries', 'treatment'])
+                'next_queries', 'treatment', 'delete_user'])
             .then( pet => {
             res.status(200).json({
                 ok: true,
@@ -94,7 +95,7 @@ const createPet = async (req,res) =>{
 
         const pet = new Pet (req.body);
 
-        const newData = `${pet.name}${pet.id_user}`;
+        const newData = `${pet.name}${pet.id_user}${Date.now()}`;
 
         if(chip){
             const existeChip = await Pet.findOne({chip});
@@ -145,11 +146,16 @@ const createPet = async (req,res) =>{
 
         await pet.save();
 
+        const userParent = await Usuario.findById(pet.id_user)
+        userParent.list_pets.push(pet.id);
+
+        await Usuario.findByIdAndUpdate(pet.id_user, userParent);
+
         res.status(201).json({
             ok: true,
             msg: 'Animal creado',
             pet
-        })
+        });
 
     }catch (error) {
         res.status(500).json({
@@ -241,7 +247,22 @@ const deletePet = async (req,res) =>{
 
     try{
 
-        await Pet.findByIdAndDelete(id).then( pet => {
+        const data = await Pet.findById(id);
+
+        if(!data){
+            res.status(404).json({
+                ok: false,
+                msg: "No se encontro el animal"
+            });
+        }
+
+        data.active = false;
+        data.delete_date = Date.now();
+        data.delete_reason = req.body.reason || 'Sin motivo';
+        data.delete_user = req.usuario.id;
+
+        await Pet.findByIdAndUpdate(id, data, {new: true})
+            .then( pet => {
             res.status(201).json({
                 ok: true,
                 msg: 'Animal eliminado',

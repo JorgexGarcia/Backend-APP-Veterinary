@@ -1,4 +1,5 @@
 const Consulta = require('../modelos/consulta');
+const Pet = require("../modelos/pet");
 
 /**
  * Método para obtener todas las consultas.
@@ -16,7 +17,7 @@ const getConsultas = async (req,res) =>{
     try{
 
         await Consulta.find()
-            .populate(['id_pet', 'id_user', 'service', 'treatment'])
+            .populate(['id_pet', 'id_user', 'service', 'treatment', 'delete_user'])
             .then( consultas => {
             res.status(200).json({
                 ok: true,
@@ -53,7 +54,7 @@ const getOneConsulta = async (req,res)=>{
     try{
 
         await Consulta.findById(id)
-            .populate(['id_pet', 'id_user', 'service', 'treatment'])
+            .populate(['id_pet', 'id_user', 'service', 'treatment', 'delete_user'])
             .then( consulta => {
             res.status(200).json({
                 ok: true,
@@ -93,6 +94,13 @@ const createConsulta = async (req,res) =>{
 
         await consulta.save();
 
+        const petParent = await Pet.findById(consulta.id_pet);
+        petParent.next_queries.push(consulta.id);
+
+        console.log(petParent)
+
+        await Pet.findByIdAndUpdate(consulta.id_pet, petParent);
+
         res.status(201).json({
             ok: true,
             msg: 'Consulta creada',
@@ -127,6 +135,14 @@ const updateConsulta = async (req,res) =>{
 
         const data = req.body;
         data.id_user = req.id;
+
+        if(data.finish){
+            const petParent = await Pet.findById(data.id_pet);
+            const num = petParent.next_queries.indexOf(id);
+            const old = petParent.next_queries.splice(num, 1);
+            petParent.queries.push(old);
+            await Pet.findByIdAndUpdate(data.id_pet, petParent);
+        }
 
         await Consulta.findByIdAndUpdate(id, data, {new: true})
             .then( consulta => {
@@ -163,7 +179,22 @@ const deleteConsulta = async (req,res) =>{
 
     try{
 
-        await Consulta.findByIdAndDelete(id).then( consulta => {
+        const data = await Consulta.findById(id);
+
+        if(!data){
+            res.status(404).json({
+                ok: false,
+                msg: "No se encontro la consulta"
+            });
+        }
+
+        data.active = false;
+        data.delete_date = Date.now();
+        data.delete_reason = req.body.reason || 'Sin motivo';
+        data.delete_user = req.usuario.id;
+
+        await Consulta.findByIdAndUpdate(id, data, {new: true})
+            .then( consulta => {
             res.status(201).json({
                 ok: true,
                 msg: 'Consulta eliminada',

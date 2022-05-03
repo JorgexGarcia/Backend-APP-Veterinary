@@ -8,7 +8,7 @@ const getTratamientos = async (req,res) =>{
     try{
 
         await Tratamiento.find()
-            .populate(['id_pet', 'id_user'])
+            .populate(['id_pet', 'id_user', 'delete_user'])
             .then( tratamientos => {
             res.status(200).json({
                 ok: true,
@@ -37,7 +37,7 @@ const getOneTratamiento = async (req,res)=>{
     try{
 
         await Tratamiento.findById(id)
-            .populate(['id_pet', 'id_user'])
+            .populate(['id_pet', 'id_user', 'delete_user'])
             .then( tratamiento => {
             res.status(200).json({
                 ok: true,
@@ -149,7 +149,22 @@ const deleteTratamiento = async (req,res) =>{
 
     try{
 
-        await Tratamiento.findByIdAndDelete(id).then( tratamiento => {
+        const data = await Tratamiento.findById(id);
+
+        if(!data){
+            res.status(404).json({
+                ok: false,
+                msg: "No se encontro el tratamiento"
+            });
+        }
+
+        data.active = false;
+        data.delete_date = Date.now();
+        data.delete_reason = req.body.reason || 'Sin motivo';
+        data.delete_user = req.usuario.id;
+
+        await Tratamiento.findByIdAndUpdate(id, data, {new: true})
+            .then( tratamiento => {
             res.status(201).json({
                 ok: true,
                 msg: 'Tratamiento eliminado',

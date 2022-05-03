@@ -9,13 +9,27 @@ const RazaSchema = Schema ({
     problems: [{
         type: String
     }],
-    tipo: {
+    type: {
         type: String,
         required: true
     },
     features: [{
         type: String
-    }]
+    }],
+    active: {
+        type: Boolean,
+        default: true,
+    },
+    delete_date: {
+        type: Date
+    },
+    delete_user: {
+        type: Schema.Types.ObjectId,
+        ref: 'Usuario'
+    },
+    delete_reason: {
+        type: String
+    }
 
 });
 

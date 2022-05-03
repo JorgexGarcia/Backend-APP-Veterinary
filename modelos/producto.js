@@ -19,6 +19,20 @@ const ProductoSchema = Schema ({
     quantity: {
         type: Number,
         required: true
+    },
+    active: {
+        type: Boolean,
+        default: true,
+    },
+    delete_date: {
+        type: Date
+    },
+    delete_user: {
+        type: Schema.Types.ObjectId,
+        ref: 'Usuario'
+    },
+    delete_reason: {
+        type: String
     }
 });
 

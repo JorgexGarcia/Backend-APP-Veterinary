@@ -15,7 +15,9 @@ const getRazas = async (req,res) =>{
             });
         }
 
-        await Raza.find().then( razas => {
+        await Raza.find()
+            .populate('delete_user')
+            .then( razas => {
             res.status(200).json({
                 ok: true,
                 msg: "Listado de razas",
@@ -50,7 +52,9 @@ const getOneRaza = async (req,res)=>{
 
     try{
 
-        await Raza.findById(id).then( raza => {
+        await Raza.findById(id)
+            .populate('delete_user')
+            .then( raza => {
             res.status(200).json({
                 ok: true,
                 msg: "Raza",
@@ -153,7 +157,22 @@ const deleteRaza = async (req,res) =>{
 
     try{
 
-        await Raza.findByIdAndDelete(id).then( raza => {
+        const data = await Raza.findById(id);
+
+        if(!data){
+            res.status(404).json({
+                ok: false,
+                msg: "No se encontro la raza"
+            });
+        }
+
+        data.active = false;
+        data.delete_date = Date.now();
+        data.delete_reason = req.body.reason || 'Sin motivo';
+        data.delete_user = req.usuario.id;
+
+        await Raza.findByIdAndUpdate(id, data, {new: true})
+            .then( raza => {
             res.status(201).json({
                 ok: true,
                 msg: 'Raza eliminada',
