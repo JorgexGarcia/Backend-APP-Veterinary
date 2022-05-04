@@ -2,6 +2,10 @@ const {Schema, model} = require('mongoose');
 
 const AidSchema = Schema ({
 
+    name:{
+        type: String,
+        required: true
+    },
     description:{
         type: String,
         required: true

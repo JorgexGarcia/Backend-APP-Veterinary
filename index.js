@@ -29,7 +29,10 @@ app.use('/api/product', require('./routes/product'));
 app.use('/api/service', require('./routes/service'));
 app.use('/api/treatment', require('./routes/treatment'));
 app.use('/api/breed', require('./routes/breed'));
+
 app.use('/api/login', require('./routes/auth'));
+
+app.use('/api/search', require('./routes/search'));
 
 /*
 app.get('*', (req, res) => {
