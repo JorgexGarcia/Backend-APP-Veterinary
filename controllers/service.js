@@ -1,4 +1,4 @@
-const Service = require('../modelos/service');
+const Service = require('../models/service');
 
 /**
  * Método para conseguir todos los servicios.
@@ -8,12 +8,12 @@ const getServices = async (req,res) =>{
     try{
 
         await Service.find()
-            .populate('delete_user')
-            .then( servicios => {
+            .populate('deleteUser')
+            .then( data => {
             res.status(200).json({
                 ok: true,
                 msg: "Listado de servicios",
-                servicios
+                data
             })
         });
 
@@ -37,12 +37,12 @@ const getOneService = async (req,res)=>{
     try{
 
         await Service.findById(id)
-            .populate('delete_user')
-            .then( servicio => {
+            .populate('deleteUser')
+            .then( data => {
             res.status(200).json({
                 ok: true,
                 msg: "Servicio",
-                servicio
+                data
             });
         });
 
@@ -63,7 +63,7 @@ const createService = async (req,res) =>{
 
     try{
 
-        if(req.usuario.rol === 'USER_ROLE'){
+        if(req.user.rol === 'USER_ROLE'){
             return res.status(401).json({
                 ok: false,
                 msg: 'Usuario sin permisos'
@@ -77,7 +77,7 @@ const createService = async (req,res) =>{
         res.status(200).json({
             ok: true,
             msg: 'Servicio creado',
-            servicio: service
+            data: service
         })
 
     }catch (error) {
@@ -95,7 +95,7 @@ const createService = async (req,res) =>{
  */
 const updateService = async (req,res) =>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -106,12 +106,15 @@ const updateService = async (req,res) =>{
 
     try{
 
-        await Service.findByIdAndUpdate(id, req.body, {new: true})
-            .then( servicio => {
+        //Elementos que no se pueden actualizar
+        const {active, deleteDate, deleteUser, deleteReason, ...fields} = req.body;
+
+        await Service.findByIdAndUpdate(id, fields, {new: true})
+            .then( data => {
                 res.status(201).json({
                     ok: true,
                     msg: 'Servicio actualizado',
-                    servicio
+                    data
                 })
             });
 
@@ -132,7 +135,7 @@ const updateService = async (req,res) =>{
  */
 const deleteService = async (req,res) =>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -148,21 +151,21 @@ const deleteService = async (req,res) =>{
         if(!data){
             res.status(404).json({
                 ok: false,
-                msg: "No se encontro el servicio"
+                msg: "No se encontró el servicio"
             });
         }
 
         data.active = false;
-        data.delete_date = Date.now();
-        data.delete_reason = req.body.reason || 'Sin motivo';
-        data.delete_user = req.usuario.id;
+        data.deleteDate = Date.now();
+        data.deleteReason = req.body.reason || 'Sin motivo';
+        data.deleteUser = req.user.id;
 
         await Service.findByIdAndUpdate(id, data, {new: true})
-            .then( servicio => {
+            .then( data => {
             res.status(201).json({
                 ok: true,
                 msg: 'Servicio eliminado',
-                servicio
+                data
             });
         });
 

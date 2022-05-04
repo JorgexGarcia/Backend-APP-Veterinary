@@ -1,6 +1,6 @@
 const {Schema, model} = require('mongoose');
 
-const ConsejoSchema = Schema ({
+const AidSchema = Schema ({
 
     description:{
         type: String,
@@ -13,20 +13,19 @@ const ConsejoSchema = Schema ({
         type: String,
         required: true
     },
-    id_user:{
-        required:true,
+    idUser:{
         type: Schema.Types.ObjectId,
-        ref: 'Usuario'
+        ref: 'User'
     }
 
 });
 
 //Para cambiar el nombre a un atributo o no visualizar uno que no quieres
-ConsejoSchema.method('toJSON', function() {
+AidSchema.method('toJSON', function() {
     const {__v, _id, ...object} = this.toObject();
     object.id = _id;
     return object;
 })
 
 
-module.exports = model('Consejo', ConsejoSchema);
+module.exports = model('Aid', AidSchema);

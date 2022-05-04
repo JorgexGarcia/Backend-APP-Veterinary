@@ -1,27 +1,27 @@
-const Usuario = require('../modelos/usuario');
+const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 
 /**
  * Método para conseguir todos los usuarios.
  *  - Sin eres usuario no puedes acceder al método
  */
-const getUsuarios = async (req,res) =>{
+const getUsers = async (req,res) =>{
 
     try{
 
-        if(req.usuario.rol === 'USER_ROLE'){
+        if(req.user.rol === 'USER_ROLE'){
             return res.status(401).json({
                 ok: false,
                 msg: 'Usuario sin permisos'
             });
         }else{
-            await Usuario.find()
-                .populate(['list_pets', 'promotions', 'delete_user'])
-                .then( usuarios => {
+            await User.find()
+                .populate(['listPets', 'promotions', 'deleteUser'])
+                .then( data => {
                 res.status(200).json({
                     ok: true,
                     msg: "Listado de usuarios",
-                    usuarios
+                    data
                 })
             });
         }
@@ -39,23 +39,23 @@ const getUsuarios = async (req,res) =>{
  * Método para conseguir un usuario según su id enviada por la url.
  *  - Sin eres usuario no puedes acceder al método a no ser que seas tu mismo.
  */
-const getOneUsuarios = async (req,res)=>{
+const getOneUser = async (req,res)=>{
 
     const id = req.params.id;
 
     try{
 
-        if(req.usuario.rol === 'USER_ROLE' && req.usuario.id !== id){
+        if(req.user.rol === 'USER_ROLE' && req.user.id !== id){
             return res.status(401).json({
                 ok: false,
                 msg: 'Usuario sin permisos'
             });
         }else{
-            await Usuario.findById(id).then( usuario => {
+            await User.findById(id).then( data => {
                 res.status(200).json({
                     ok: true,
                     msg: "Usuario",
-                    usuario
+                    data
                 })
             });
         }
@@ -73,15 +73,15 @@ const getOneUsuarios = async (req,res)=>{
  * Método para crear un usuario según la información pasada en la petición.
  *  - Sin eres usuario no puedes acceder al método
  *  - Primero compruebo si ya hay un usuario con ese email:
- *      - Si ya tenemos uno , compruebo si esta eliminado:
- *          - Si no esta, indico al forntend que ya hay un asuario con ese email
+ *      - Si ya tenemos uno, compruebo si está eliminado:
+ *          - Si no esta, indico que hay un usuario con ese email
  *          - Si esta, loo actualizo con la nueva información y lo marco como activo
  *  - Lo mismo con el dni
  *  - Si no esta el dni ni el email en la BD, creo un usuario nuevo.
  */
-const createUsuario = async (req,res) =>{
+const createUser = async (req,res) =>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -90,31 +90,31 @@ const createUsuario = async (req,res) =>{
 
     const {email, dni, password} = req.body;
 
-    const usuario = new Usuario (req.body);
+    const user = new User (req.body);
     //Encriptar contraseña
     const salt = bcrypt.genSaltSync();
-    usuario.password = bcrypt.hashSync(password, salt);
+    user.password = bcrypt.hashSync(password, salt);
 
     try{
 
-        const existeEmail = await Usuario.findOne({email});
+        const checkEmail = await User.findOne({email});
 
-        if( existeEmail ){
+        if( checkEmail ){
 
-            if(existeEmail.active){
+            if(checkEmail.active){
                 return res.status(409).json({
                     ok: false,
                     msg: 'El correo ya está registrado'
                 });
 
             }else{
-                existeEmail.active = true;
-                await Usuario.findOneAndUpdate({email}, existeEmail,{new: true})
-                    .then( usuario => {
+                checkEmail.active = true;
+                await User.findOneAndUpdate({email}, checkEmail,{new: true})
+                    .then( data => {
                         return res.status(201).json({
                             ok: true,
                             msg: 'Usuario activado de nuevo',
-                            usuario
+                            data
                         });
                 });
                 return;
@@ -123,23 +123,24 @@ const createUsuario = async (req,res) =>{
 
         }
 
-        const existeDni = await Usuario.findOne({dni});
+        const checkDni = await User.findOne({dni});
 
-        if( existeDni ){
+        if( checkDni ){
 
-            if(existeDni.active){
+            if(checkDni.active){
                 return res.status(409).json({
                     ok: false,
                     msg: 'El dni ya está registrado'
                 });
 
             }else{
-                await Usuario.findOneAndUpdate({dni}, {usuario},{new: true})
-                    .then( usuario => {
+                checkDni.active = true
+                await User.findOneAndUpdate({dni}, checkDni,{new: true})
+                    .then( data => {
                         return res.status(201).json({
                             ok: true,
                             msg: 'Usuario activado de nuevo',
-                            usuario
+                            data
                         });
                     });
                 return;
@@ -147,12 +148,12 @@ const createUsuario = async (req,res) =>{
 
         }
 
-        await usuario.save();
+        await user.save();
 
         res.status(200).json({
             ok: true,
             msg: 'Usuario creado',
-            usuario
+            data: user
         });
 
     }catch (error) {
@@ -173,61 +174,61 @@ const createUsuario = async (req,res) =>{
  *  - No se puede actualizar:
  *      - password, auth, email, dni, active, delete_date, delete_user
  */
-const updateUsuario = async (req,res) =>{
+const updateUser = async (req,res) =>{
 
     const id = req.params.id;
 
     try{
 
-        if(req.usuario.rol === 'USER_ROLE' && req.usuario.id !== id){
+        if(req.user.rol === 'USER_ROLE' && req.user.id !== id){
             return res.status(401).json({
                 ok: false,
                 msg: 'Usuario sin permisos'
             });
         }
 
-        const usuarioDB = await Usuario.findById(id);
+        const userDB = await User.findById(id);
 
-        if(!usuarioDB){
+        if(!userDB){
             res.status(404).json({
                 ok: false,
-                msg: "No se encontro el usuario"
+                msg: "No se encontró el usuario"
             });
         }
 
         //Elementos que no se pueden actualizar
         const {password, auth, email, dni, active,
-            delete_date, delete_user, ...campos} = req.body;
+            deleteDate, deleteUser, deleteReason, ...fields} = req.body;
 
-        if(usuarioDB.email !== email){
-            const existeEmail = await Usuario.findOne({email : campos.email});
+        if(userDB.email !== email){
+            const checkEmail = await User.findOne({email});
 
-            if( existeEmail ){
+            if( checkEmail ){
                 return res.status(409).json({
                     ok: false,
                     msg: 'El correo ya está registrado'
                 });
             }
         }
-        campos.email = email;
+        fields.email = email;
 
-        if( usuarioDB.dni !== dni){
-            const existeDni = await Usuario.findOne({dni});
+        if( userDB.dni !== dni){
+            const checkDni = await User.findOne({dni});
 
-            if( existeDni ){
+            if( checkDni ){
                 return res.status(409).json({
                     ok: false,
                     msg: 'El dni ya está registrado'
                 });
             }
         }
-        campos.dni = dni;
+        fields.dni = dni;
 
-        await Usuario.findByIdAndUpdate(id, campos, {new: true}).then( usuario => {
+        await User.findByIdAndUpdate(id, fields, {new: true}).then( data => {
            res.status(201).json({
                ok: true,
                msg: 'Usuario actualizado',
-               usuario
+               data
            })
         });
 
@@ -245,9 +246,9 @@ const updateUsuario = async (req,res) =>{
  *  - No eliminamos un usuario de la BD, sino que lo marcamos como que no esta activo.
  *  - También añadimos la fecha de la eliminación y quien lo elimino para llevar un control.
  */
-const deleteUsuario = async (req,res) =>{
+const deleteUser = async (req,res) =>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -258,26 +259,26 @@ const deleteUsuario = async (req,res) =>{
 
     try{
 
-        const usuarioDB = await Usuario.findById(id);
+        const userDB = await User.findById(id);
 
-        if(!usuarioDB){
+        if(!userDB){
             res.status(404).json({
                 ok: false,
-                msg: "No se encontro el usuario"
+                msg: "No se encontró el usuario"
             });
         }
 
-        usuarioDB.active = false;
-        usuarioDB.delete_date = Date.now();
-        usuarioDB.delete_reason = req.body.reason || 'Sin motivo';
-        usuarioDB.delete_user = req.usuario.id;
+        userDB.active = false;
+        userDB.deleteDate = Date.now();
+        userDB.deleteReason = req.body.reason || 'Sin motivo';
+        userDB.deleteUser = req.user.id;
 
-        await Usuario.findByIdAndUpdate(id, usuarioDB, {new: true})
-            .then( usuario => {
+        await User.findByIdAndUpdate(id, userDB, {new: true})
+            .then( data => {
             res.status(201).json({
                 ok: true,
                 msg: 'Usuario eliminado',
-                usuario
+                data
             });
         });
 
@@ -290,9 +291,9 @@ const deleteUsuario = async (req,res) =>{
 }
 
 module.exports = {
-    getUsuarios,
-    createUsuario,
-    getOneUsuarios,
-    deleteUsuario,
-    updateUsuario
+    getUsers,
+    createUser,
+    getOneUser,
+    deleteUser,
+    updateUser
 }

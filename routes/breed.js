@@ -1,53 +1,53 @@
 const {Router} = require("express");
-const {getRazas,
-    getOneRaza,
-    createRaza,
-    updateRaza,
-    deleteRaza} = require('../controllers/razas');
+const {getBreeds,
+    getOneBreed,
+    createBreed,
+    updateBreed,
+    deleteBreed} = require('../controllers/breed');
 const {check} = require("express-validator");
-const {validarCampos} = require("../middlewares/validar-campos");
-const {validarJWT} = require("../middlewares/validar-JWT");
+const {checkField} = require('../middlewares/check-field')
+const {checkJWT} = require("../middlewares/check-JWT");
 
 const router = Router();
 
 router.get('/',
     [
-        validarJWT
+        checkJWT
     ],
-    getRazas
+    getBreeds
 );
 
 router.get('/:id',
     [
-        validarJWT
+        checkJWT
     ],
-    getOneRaza
+    getOneBreed
 );
 
 router.post('/',
     [
-        validarJWT,
+        checkJWT,
         check('name', 'El nombre es obligatorio').not().isEmpty(),
         check('type', 'El tipo es obligatorio').not().isEmpty(),
-        validarCampos
+        checkField
     ],
-    createRaza
+    createBreed
 );
 router.put('/:id',
     [
-        validarJWT,
+        checkJWT,
         check('name', 'El nombre es obligatorio').not().isEmpty(),
         check('type', 'El tipo es obligatorio').not().isEmpty(),
-        validarCampos
+        checkField
     ],
-    updateRaza
+    updateBreed
 );
 
 router.delete('/:id',
     [
-        validarJWT
+        checkJWT
     ],
-    deleteRaza
+    deleteBreed
 );
 
 module.exports = router;

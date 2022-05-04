@@ -1,5 +1,5 @@
-const Pet = require('../modelos/pet');
-const Usuario = require("../modelos/usuario");
+const Pet = require('../models/pet');
+const User = require("../models/user");
 
 /**
  * Método para obtener el listado de animales.
@@ -7,7 +7,7 @@ const Usuario = require("../modelos/usuario");
  */
 const getPets = async (req,res) =>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -17,13 +17,13 @@ const getPets = async (req,res) =>{
     try{
 
         await Pet.find()
-            .populate(['id_user','race', 'queries',
-                'next_queries', 'treatment', 'delete_user'])
-            .then( pets => {
+            .populate(['idUser','race', 'queries',
+                'nextQueries', 'treatment', 'deleteUser'])
+            .then( data => {
             res.status(200).json({
                 ok: true,
                 msg: "Listado de animales",
-                pets
+                data
             })
         });
 
@@ -43,7 +43,7 @@ const getPets = async (req,res) =>{
  */
 const getOnePet = async (req,res)=>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -55,13 +55,13 @@ const getOnePet = async (req,res)=>{
     try{
 
         await Pet.findById(id)
-            .populate(['id_user','race', 'queries',
-                'next_queries', 'treatment', 'delete_user'])
-            .then( pet => {
+            .populate(['idUser','race', 'queries',
+                'nextQueries', 'treatment', 'deleteUser'])
+            .then( data => {
             res.status(200).json({
                 ok: true,
                 msg: "Animal",
-                pet
+                data
             });
         });
 
@@ -78,13 +78,13 @@ const getOnePet = async (req,res)=>{
  * Método para crear un animal.
  *  - Si eres Usuario no puedes acceder al método.
  *  - Comprobamos si ya hay un chip o un pasaporte registrado.
- *  - Si no lo tiene, le introducimos la concadenación del id del dueño
+ *  - Si no lo tiene, le introducimos la id del dueño
  *          con el nombre del animal y la fecha.
  *  - Si creamos el animal, introducimos en el dueño del animal la id en su lista
  */
 const createPet = async (req,res) =>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -100,9 +100,9 @@ const createPet = async (req,res) =>{
         const newData = `${pet.name}${pet.id_user}${Date.now()}`;
 
         if(chip){
-            const existeChip = await Pet.findOne({chip});
+            const checkChip = await Pet.findOne({chip});
 
-            if(existeChip){
+            if(checkChip){
                 return res.status(409).json({
                     ok: false,
                     msg: 'El chip ya esta registrado'
@@ -110,22 +110,13 @@ const createPet = async (req,res) =>{
             }
 
         }else{
-            const existeChip = await Pet.findOne({chip: newData});
-
-            if(existeChip){
-                return res.status(409).json({
-                    ok: false,
-                    msg: 'El chip ya esta registrado'
-                });
-            }else{
-                pet.chip = newData;
-            }
+            pet.chip = newData;
         }
 
         if(passport){
-            const existePassport = await Pet.findOne({passport});
+            const checkPassport = await Pet.findOne({passport});
 
-            if(existePassport){
+            if(checkPassport){
                 return res.status(409).json({
                     ok: false,
                     msg: 'El pasaporte ya esta registrado'
@@ -133,37 +124,26 @@ const createPet = async (req,res) =>{
             }
 
         }else{
-            const existePassport = await Pet.findOne({passport: newData});
-
-            if(existePassport){
-                return res.status(409).json({
-                    ok: false,
-                    msg: 'El pasaporte ya esta registrado'
-                });
-
-            }else{
-                pet.passport = newData;
-            }
+            pet.passport = newData;
         }
 
         await pet.save();
 
-        const userParent = await Usuario.findById(pet.id_user)
-        userParent.list_pets.push(pet.id);
+        const userParent = await User.findById(pet.idUser)
+        userParent.listPets.push(pet.id);
 
-        await Usuario.findByIdAndUpdate(pet.id_user, userParent);
+        await User.findByIdAndUpdate(pet.idUser, userParent);
 
         res.status(201).json({
             ok: true,
             msg: 'Animal creado',
-            pet
+            data: pet
         });
 
     }catch (error) {
         res.status(500).json({
             ok: false,
-            msg: "Error inesperado...., llame a su administrador",
-            error
+            msg: "Error inesperado...., llame a su administrador"
         });
     }
 
@@ -179,13 +159,13 @@ const updatePet = async (req,res) =>{
     let checkPet = false;
     const id = req.params.id;
 
-    req.usuario.list_pets.forEach( idUser => {
+    req.user.listPets.forEach( idUser => {
         if(idUser.toString() === id){
             checkPet = true;
         }
     })
 
-    if(req.usuario.rol === 'USER_ROLE' || !checkPet){
+    if(req.user.rol === 'USER_ROLE' || !checkPet){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -194,32 +174,37 @@ const updatePet = async (req,res) =>{
 
     try{
 
-        const {chip, passport} = req.body;
+        //Elementos que no se pueden actualizar
+        const {chip, passport,
+            active, deleteDate, deleteUser, deleteReason, ...fields} = req.body;
 
-        const existeChip = await Pet.findOne({chip});
+        const checkChip = await Pet.findOne({chip});
 
-        if(existeChip){
+        if(checkChip){
             return res.status(409).json({
                 ok: false,
                 msg: 'El chip ya esta registrado'
             });
         }
 
-        const existePassport = await Pet.findOne({passport});
+        const checkPassport = await Pet.findOne({passport});
 
-        if(existePassport){
+        if(checkPassport){
             return res.status(409).json({
                 ok: false,
                 msg: 'El pasaporte ya esta registrado'
             });
         }
 
-        await Pet.findByIdAndUpdate(id, req.body, {new: true})
-            .then( pet => {
+        fields.chip = chip;
+        fields.passport = passport;
+
+        await Pet.findByIdAndUpdate(id, fields, {new: true})
+            .then( data => {
                 res.status(201).json({
                     ok: true,
                     msg: 'Animal actualizado',
-                    pet
+                    data
                 })
             });
 
@@ -240,7 +225,7 @@ const updatePet = async (req,res) =>{
  */
 const deletePet = async (req,res) =>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -256,21 +241,21 @@ const deletePet = async (req,res) =>{
         if(!data){
             res.status(404).json({
                 ok: false,
-                msg: "No se encontro el animal"
+                msg: "No se encontró el animal"
             });
         }
 
         data.active = false;
-        data.delete_date = Date.now();
-        data.delete_reason = req.body.reason || 'Sin motivo';
-        data.delete_user = req.usuario.id;
+        data.deleteDate = Date.now();
+        data.deleteReason = req.body.reason || 'Sin motivo';
+        data.deleteUser = req.user.id;
 
         await Pet.findByIdAndUpdate(id, data, {new: true})
-            .then( pet => {
+            .then( data => {
             res.status(201).json({
                 ok: true,
                 msg: 'Animal eliminado',
-                pet
+                data
             });
         });
 

@@ -1,12 +1,12 @@
-const Producto = require('../modelos/producto');
+const Product = require('../models/product');
 
 /**
  * Método para obtener el listado de productos.
  *  - Si eres Usuario no puedes acceder al método.
  */
-const getProductos = async (req,res) =>{
+const getProducts = async (req,res) =>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -15,11 +15,11 @@ const getProductos = async (req,res) =>{
 
     try{
 
-        await Producto.find().then( productos => {
+        await Product.find().then( data => {
             res.status(200).json({
                 ok: true,
                 msg: "Listado de productos",
-                productos
+                data
             })
         });
 
@@ -37,9 +37,9 @@ const getProductos = async (req,res) =>{
  * Método para obtener un producto.
  *  - Si eres Usuario no puedes acceder al método.
  */
-const getOneProducto = async (req,res)=>{
+const getOneProduct = async (req,res)=>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -50,11 +50,11 @@ const getOneProducto = async (req,res)=>{
 
     try{
 
-        await Producto.findById(id).then( producto => {
+        await Product.findById(id).then( data => {
             res.status(200).json({
                 ok: true,
                 msg: "Producto",
-                producto
+                data
             });
         });
 
@@ -71,9 +71,9 @@ const getOneProducto = async (req,res)=>{
  * Método para crear un producto.
  *  - Si eres Usuario no puedes acceder al método.
  */
-const createProducto = async (req,res) =>{
+const createProduct = async (req,res) =>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -82,14 +82,14 @@ const createProducto = async (req,res) =>{
 
     try{
 
-        const producto = new Producto (req.body);
+        const product = new Product(req.body);
 
-        await producto.save();
+        await product.save();
 
         res.status(201).json({
             ok: true,
             msg: 'Producto creada',
-            producto
+            data: product
         })
 
     }catch (error) {
@@ -105,9 +105,9 @@ const createProducto = async (req,res) =>{
  * Método para actualizar un producto.
  *  - Si eres Usuario no puedes acceder al método.
  */
-const updateProducto = async (req,res) =>{
+const updateProduct = async (req,res) =>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -118,12 +118,15 @@ const updateProducto = async (req,res) =>{
 
     try{
 
-        await Producto.findByIdAndUpdate(id, req.body, {new: true})
-            .then( producto => {
+        //Elementos que no se pueden actualizar
+        const {active, deleteDate, deleteUser, deleteReason, ...fields} = req.body;
+
+        await Product.findByIdAndUpdate(id, fields, {new: true})
+            .then( data => {
                 res.status(201).json({
                     ok: true,
                     msg: 'Producto actualizado',
-                    producto
+                    data
                 })
             });
 
@@ -142,9 +145,9 @@ const updateProducto = async (req,res) =>{
  *  - No eliminamos el producto, lo marcamos como no activo, guardamos la fecha,
  *      el motivo y el usuario que lo desea eliminar.
  */
-const deleteProducto = async (req,res) =>{
+const deleteProduct = async (req,res) =>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -155,26 +158,26 @@ const deleteProducto = async (req,res) =>{
 
     try{
 
-        const data = await Producto.findById(id);
+        const data = await Product.findById(id);
 
         if(!data){
             res.status(404).json({
                 ok: false,
-                msg: "No se encontro el producto"
+                msg: "No se encontró el producto"
             });
         }
 
         data.active = false;
-        data.delete_date = Date.now();
-        data.delete_reason = req.body.reason || 'Sin motivo';
-        data.delete_user = req.usuario.id;
+        data.deleteDate = Date.now();
+        data.deleteReason = req.body.reason || 'Sin motivo';
+        data.deleteUser = req.user.id;
 
-        await Producto.findByIdAndUpdate(id, data, {new: true})
-            .then( producto => {
+        await Product.findByIdAndUpdate(id, data, {new: true})
+            .then( data => {
             res.status(201).json({
                 ok: true,
                 msg: 'Producto eliminado',
-                producto
+                data
             });
         });
 
@@ -188,9 +191,9 @@ const deleteProducto = async (req,res) =>{
 }
 
 module.exports = {
-    getProductos,
-    getOneProducto,
-    createProducto,
-    updateProducto,
-    deleteProducto
+    getProducts,
+    getOneProduct,
+    createProduct,
+    updateProduct,
+    deleteProduct
 }

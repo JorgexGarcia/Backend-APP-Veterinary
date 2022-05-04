@@ -20,15 +20,15 @@ app.use(express.static('public'));
 
 
 //Rutas
-app.use('/api/usuarios', require('./routes/usuarios'));
-app.use('/api/consultas', require('./routes/consultas'));
-app.use('/api/promociones', require('./routes/promociones'));
-app.use('/api/consejos', require('./routes/consejos'));
-app.use('/api/animales', require('./routes/pets'));
-app.use('/api/productos', require('./routes/productos'));
-app.use('/api/servicios', require('./routes/services'));
-app.use('/api/tratamientos', require('./routes/tratamientos'));
-app.use('/api/razas', require('./routes/razas'));
+app.use('/api/user', require('./routes/user'));
+app.use('/api/queries', require('./routes/queries'));
+app.use('/api/promotion', require('./routes/promotion'));
+app.use('/api/aids', require('./routes/aids'));
+app.use('/api/pet', require('./routes/pet'));
+app.use('/api/product', require('./routes/product'));
+app.use('/api/service', require('./routes/service'));
+app.use('/api/treatment', require('./routes/treatment'));
+app.use('/api/breed', require('./routes/breed'));
 app.use('/api/login', require('./routes/auth'));
 
 /*

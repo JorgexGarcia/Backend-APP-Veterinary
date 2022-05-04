@@ -1,27 +1,27 @@
 const {Schema, model} = require('mongoose');
 
-const ConsultaSchema = Schema ({
+const QueriesSchema = Schema ({
 
     type: {
         type: String,
         required: true
     },
-    id_pet:{
+    idPet:{
         required:true,
         type: Schema.Types.ObjectId,
         ref: 'Pet'
     },
-    id_user:{
+    idUser:{
         required:true,
         type: Schema.Types.ObjectId,
-        ref: 'Usuario'
+        ref: 'User'
     },
     description: {
         type: String,
         required: true
     },
     reports: [{
-        type_report: {type: String},
+        typeReport: {type: String},
         url: {type: String, required: true}
     }],
     service: {
@@ -29,7 +29,7 @@ const ConsultaSchema = Schema ({
         type: Schema.Types.ObjectId,
         ref: 'Service'
     },
-    first_observation: {
+    firstObservation: {
         type: String
     },
     tests: {
@@ -37,7 +37,7 @@ const ConsultaSchema = Schema ({
     },
     treatment: [{
         type: Schema.Types.ObjectId,
-        ref: 'Tratamiento'
+        ref: 'Treatment'
     }],
     diagnostic: {
         type: String
@@ -54,24 +54,24 @@ const ConsultaSchema = Schema ({
         type: Boolean,
         default: true,
     },
-    delete_date: {
+    deleteDate: {
         type: Date
     },
-    delete_user: {
+    deleteUser: {
         type: Schema.Types.ObjectId,
-        ref: 'Usuario'
+        ref: 'User'
     },
-    delete_reason: {
+    deleteReason: {
         type: String
     }
 });
 
 //Para cambiar el nombre a un atributo o no visualizar uno que no quieres
-ConsultaSchema.method('toJSON', function() {
+QueriesSchema.method('toJSON', function() {
     const {__v, _id, ...object} = this.toObject();
     object.id = _id;
     return object;
 })
 
 
-module.exports = model('Consulta', ConsultaSchema);
+module.exports = model('Queries', QueriesSchema);

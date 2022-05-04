@@ -1,41 +1,44 @@
 const {Schema, model} = require('mongoose');
 
-const ServiceSchema = Schema ({
+const BreedSchema = Schema ({
 
     name: {
         type: String,
         required: true
     },
-    description: {
+    problems: [{
+        type: String
+    }],
+    type: {
         type: String,
         required: true
     },
-    price: {
-        type: Number,
-        required: true
-    },
+    features: [{
+        type: String
+    }],
     active: {
         type: Boolean,
         default: true,
     },
-    delete_date: {
+    deleteDate: {
         type: Date
     },
-    delete_user: {
+    deleteUser: {
         type: Schema.Types.ObjectId,
-        ref: 'Usuario'
+        ref: 'User'
     },
-    delete_reason: {
+    deleteReason: {
         type: String
     }
+
 });
 
 //Para cambiar el nombre a un atributo o no visualizar uno que no quieres
-ServiceSchema.method('toJSON', function() {
+BreedSchema.method('toJSON', function() {
     const {__v, _id, ...object} = this.toObject();
     object.id = _id;
     return object;
 })
 
 
-module.exports = model('Service', ServiceSchema);
+module.exports = model('Breed', BreedSchema);

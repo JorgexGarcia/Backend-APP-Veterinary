@@ -1,14 +1,14 @@
 const {validationResult} = require("express-validator");
 
 
-const validarCampos = (req,res, next) => {
+const checkField = (req, res, next) => {
 
-    const errores = validationResult( req );
+    const errors = validationResult( req );
 
-    if(!errores.isEmpty()){
+    if(!errors.isEmpty()){
         return res.status(400).json({
             ok: false,
-            msg: errores.mapped()
+            msg: errors.mapped()
         });
     }
 
@@ -17,5 +17,5 @@ const validarCampos = (req,res, next) => {
 }
 
 module.exports = {
-    validarCampos
+    checkField
 }

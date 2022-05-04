@@ -1,20 +1,20 @@
-const Promocion = require('../modelos/promocion');
+const Promotion = require('../models/promotion');
 
 /**
  * Método para obtener todas las promociones.
  */
-const getPromociones = async (req,res) =>{
+const getPromotions = async (req,res) =>{
 
     try{
 
-        await Promocion.find()
-            .populate('delete_user')
-            .then( promociones => {
-            res.status(200).json({
-                ok: true,
-                msg: "Listado de promociones",
-                promociones
-            })
+        await Promotion.find()
+            .populate('deleteUser')
+            .then( data => {
+                res.status(200).json({
+                    ok: true,
+                    msg: "Listado de promociones",
+                    data
+                })
         });
 
 
@@ -30,19 +30,19 @@ const getPromociones = async (req,res) =>{
 /**
  * Método para obtener una promoción.
  */
-const getOnePromocion = async (req,res)=>{
+const getOnePromotion = async (req,res)=>{
 
     const id = req.params.id;
 
     try{
 
-        await Promocion.findById(id)
-            .populate('delete_user')
-            .then( promocion => {
+        await Promotion.findById(id)
+            .populate('deleteUser')
+            .then( data => {
             res.status(200).json({
                 ok: true,
                 msg: "Promoción",
-                promocion
+                data
             });
         });
 
@@ -58,32 +58,31 @@ const getOnePromocion = async (req,res)=>{
  * Método para crear una promoción.
  *  - Si eres Usuario no puedes acceder al método.
  */
-const createPromocion = async (req,res) =>{
+const createPromotion = async (req,res) =>{
 
     try{
 
-        if(req.usuario.rol === 'USER_ROLE'){
+        if(req.user.rol === 'USER_ROLE'){
             return res.status(401).json({
                 ok: false,
                 msg: 'Usuario sin permisos'
             });
         }
 
-        const promocion = new Promocion (req.body);
+        const promotion = new Promotion (req.body);
 
-        await promocion.save();
+        await promotion.save();
 
         res.status(201).json({
             ok: true,
             msg: 'Promoción creada',
-            promocion
+            data: promotion
         })
 
     }catch (error) {
         res.status(500).json({
             ok: false,
-            msg: "Error inesperado...., llame a su administrador",
-            error
+            msg: "Error inesperado...., llame a su administrador"
         });
     }
 
@@ -93,9 +92,9 @@ const createPromocion = async (req,res) =>{
  * Método para actualizar una promoción.
  *  - Si eres Usuario no puedes acceder al método.
  */
-const updatePromocion = async (req,res) =>{
+const updatePromotion = async (req,res) =>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -106,12 +105,14 @@ const updatePromocion = async (req,res) =>{
 
     try{
 
-        await Promocion.findByIdAndUpdate(id, req.body, {new: true})
-            .then( promocion => {
+        const {active, deleteDate, deleteUser, deleteReason, ...fields} = req.body;
+
+        await Promotion.findByIdAndUpdate(id, fields, {new: true})
+            .then( data => {
                 res.status(201).json({
                     ok: true,
                     msg: 'Promoción actualizado',
-                    promocion
+                    data
                 })
             });
 
@@ -130,9 +131,9 @@ const updatePromocion = async (req,res) =>{
  *  - No eliminamos la promoción, lo marcamos como no activo, guardamos la fecha,
  *      el motivo y el usuario que lo desea eliminar
  */
-const deletePromocion = async (req,res) =>{
+const deletePromotion = async (req,res) =>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -143,26 +144,26 @@ const deletePromocion = async (req,res) =>{
 
     try{
 
-        const data = await Promocion.findById(id);
+        const data = await Promotion.findById(id);
 
         if(!data){
             res.status(404).json({
                 ok: false,
-                msg: "No se encontro la promoción"
+                msg: "No se encontró la promoción"
             });
         }
 
         data.active = false;
-        data.delete_date = Date.now();
-        data.delete_reason = req.body.reason || 'Sin motivo';
-        data.delete_user = req.usuario.id;
+        data.deleteDate = Date.now();
+        data.deleteReason = req.body.reason || 'Sin motivo';
+        data.deleteUser = req.user.id;
 
-        await Promocion.findByIdAndUpdate(id, data, {new: true})
-            .then( promocion => {
+        await Promotion.findByIdAndUpdate(id, data, {new: true})
+            .then( data => {
             res.status(201).json({
                 ok: true,
                 msg: 'Promoción eliminada',
-                promocion
+                data
             });
         });
 
@@ -176,9 +177,9 @@ const deletePromocion = async (req,res) =>{
 }
 
 module.exports = {
-    getPromociones,
-    getOnePromocion,
-    createPromocion,
-    updatePromocion,
-    deletePromocion
+    getPromotions,
+    getOnePromotion,
+    createPromotion,
+    updatePromotion,
+    deletePromotion
 }

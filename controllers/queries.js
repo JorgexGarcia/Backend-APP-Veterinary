@@ -1,13 +1,13 @@
-const Consulta = require('../modelos/consulta');
-const Pet = require("../modelos/pet");
+const Queries = require('../models/queries');
+const Pet = require("../models/pet");
 
 /**
  * Método para obtener todas las consultas.
  *  - Si eres usuario no puedes acceder a este método.
  */
-const getConsultas = async (req,res) =>{
+const getQueries = async (req,res) =>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -16,14 +16,14 @@ const getConsultas = async (req,res) =>{
 
     try{
 
-        await Consulta.find()
-            .populate(['id_pet', 'id_user', 'service',
-                'treatment', 'delete_user'])
-            .then( consultas => {
+        await Queries.find()
+            .populate(['idPet', 'idUser', 'service',
+                'treatment', 'deleteUser'])
+            .then( data => {
             res.status(200).json({
                 ok: true,
                 msg: "Listado de consultas",
-                consultas
+                data
             })
         });
 
@@ -41,9 +41,9 @@ const getConsultas = async (req,res) =>{
  * Método para obtener una consulta.
  * - Si eres usuario no puedes acceder.
  */
-const getOneConsulta = async (req,res)=>{
+const getOneQueries = async (req,res)=>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -54,14 +54,14 @@ const getOneConsulta = async (req,res)=>{
 
     try{
 
-        await Consulta.findById(id)
-            .populate(['id_pet', 'id_user', 'service',
-                'treatment', 'delete_user'])
-            .then( consulta => {
+        await Queries.findById(id)
+            .populate(['idPet', 'idUser', 'service',
+                'treatment', 'deleteUser'])
+            .then( data => {
             res.status(200).json({
                 ok: true,
                 msg: "Consulta",
-                consulta
+                data
             });
         });
 
@@ -80,9 +80,9 @@ const getOneConsulta = async (req,res)=>{
  *  - Guardamos el usuario que creo la consulta.
  *  - Introducimos la consulta en el array de próximas consultas del animal.
  */
-const createConsulta = async (req,res) =>{
+const createQueries = async (req,res) =>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -91,22 +91,22 @@ const createConsulta = async (req,res) =>{
 
     try{
 
-        const consulta = new Consulta ({
-            id_user: req.usuario.id,
+        const queries = new Queries({
+            idUser: req.user.id,
             ...req.body
         });
 
-        await consulta.save();
+        await queries.save();
 
-        const petParent = await Pet.findById(consulta.id_pet);
-        petParent.next_queries.push(consulta.id);
+        const petParent = await Pet.findById(queries.idPet);
+        petParent.nextQueries.push(queries.id);
 
-        await Pet.findByIdAndUpdate(consulta.id_pet, petParent);
+        await Pet.findByIdAndUpdate(queries.idPet, petParent);
 
         res.status(201).json({
             ok: true,
             msg: 'Consulta creada',
-            consulta
+            data: queries
         })
 
     }catch (error) {
@@ -124,9 +124,9 @@ const createConsulta = async (req,res) =>{
  * - Si actualizamos la variable de la consulta de finalizada a true, quitamos la consulta
  *      en el animal de próximas consultas a consultas ya finalizadas.
  */
-const updateConsulta = async (req,res) =>{
+const updateQueries = async (req,res) =>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -137,23 +137,26 @@ const updateConsulta = async (req,res) =>{
 
     try{
 
-        const data = req.body;
-        data.id_user = req.id;
+        //Elementos que no se pueden actualizar
+        const {active, deleteDate, deleteUser, deleteReason, ...fields} = req.body;
+
+        const data = fields;
+        data.idUser = req.id;
 
         if(data.finish){
-            const petParent = await Pet.findById(data.id_pet);
-            const num = petParent.next_queries.indexOf(id);
-            const old = petParent.next_queries.splice(num, 1);
+            const petParent = await Pet.findById(data.idPet);
+            const num = petParent.nextQueries.indexOf(id);
+            const old = petParent.nextQueries.splice(num, 1);
             petParent.queries.push(old);
-            await Pet.findByIdAndUpdate(data.id_pet, petParent);
+            await Pet.findByIdAndUpdate(data.idPet, petParent);
         }
 
-        await Consulta.findByIdAndUpdate(id, data, {new: true})
-            .then( consulta => {
+        await Queries.findByIdAndUpdate(id, data, {new: true})
+            .then( data => {
                 res.status(201).json({
                     ok: true,
                     msg: 'Consulta actualizada',
-                    consulta
+                    data
                 })
             });
 
@@ -172,9 +175,9 @@ const updateConsulta = async (req,res) =>{
  * - No eliminamos la consulta, la marcamos como no activa, guardamos la fecha,
  *      motivo y usuario que la desea eliminar.
  */
-const deleteConsulta = async (req,res) =>{
+const deleteQueries = async (req,res) =>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -185,26 +188,26 @@ const deleteConsulta = async (req,res) =>{
 
     try{
 
-        const data = await Consulta.findById(id);
+        const data = await Queries.findById(id);
 
         if(!data){
             res.status(404).json({
                 ok: false,
-                msg: "No se encontro la consulta"
+                msg: "No se encontró la consulta"
             });
         }
 
         data.active = false;
-        data.delete_date = Date.now();
-        data.delete_reason = req.body.reason || 'Sin motivo';
-        data.delete_user = req.usuario.id;
+        data.deleteDate = Date.now();
+        data.deleteReason = req.body.reason || 'Sin motivo';
+        data.deleteUser = req.user.id;
 
-        await Consulta.findByIdAndUpdate(id, data, {new: true})
-            .then( consulta => {
+        await Queries.findByIdAndUpdate(id, data, {new: true})
+            .then( data => {
             res.status(201).json({
                 ok: true,
                 msg: 'Consulta eliminada',
-                consulta
+                data
             });
         });
 
@@ -218,9 +221,9 @@ const deleteConsulta = async (req,res) =>{
 }
 
 module.exports = {
-    getConsultas,
-    getOneConsulta,
-    createConsulta,
-    updateConsulta,
-    deleteConsulta
+    getQueries,
+    getOneQueries,
+    createQueries,
+    updateQueries,
+    deleteQueries
 }

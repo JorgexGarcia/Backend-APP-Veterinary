@@ -1,20 +1,20 @@
-const Consejo = require('../modelos/consejo');
+const Aid = require('../models/aids');
 
 
 /**
  * Método para obtener el listado de consejos
  */
-const getConsejos = async (req,res) =>{
+const getAids = async (req,res) =>{
 
     try{
 
-        await Consejo.find()
-            .populate('id_user')
-            .then( consejos => {
+        await Aid.find()
+            .populate('idUser')
+            .then( data => {
             res.status(200).json({
                 ok: true,
                 msg: "Listado de consejos",
-                consejos
+                data
             })
         });
 
@@ -31,19 +31,19 @@ const getConsejos = async (req,res) =>{
 /**
  * Método para obtener un consejo
  */
-const getOneConsejo = async (req,res)=>{
+const getOneAid = async (req,res)=>{
 
     const id = req.params.id;
 
     try{
 
-        await Consejo.findById(id)
-            .populate('id_user')
-            .then( consejo => {
+        await Aid.findById(id)
+            .populate('idUser')
+            .then( data => {
             res.status(200).json({
                 ok: true,
                 msg: "Consejo",
-                consejo
+                data
             });
         });
 
@@ -61,9 +61,9 @@ const getOneConsejo = async (req,res)=>{
  * - Si eres usuario no puedes acceder.
  * - Guardamos el usuario que creo el consejo.
  */
-const createConsejo = async (req,res) =>{
+const createAid = async (req,res) =>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -72,17 +72,17 @@ const createConsejo = async (req,res) =>{
 
     try{
 
-        const consejo = new Consejo ({
-            id_user: req.usuario.id,
+        const aid = new Aid({
+            id_user: req.user.id,
             ...req.body
         });
 
-        await consejo.save();
+        await aid.save();
 
         res.status(201).json({
             ok: true,
             msg: 'Consejo creado',
-            consejo
+            data: aid
         })
 
     }catch (error) {
@@ -99,9 +99,9 @@ const createConsejo = async (req,res) =>{
  * - Si eres usuario no puedes acceder.
  * - Guardamos el usuario que modifico el consejo.
  */
-const updateConsejo = async (req,res) =>{
+const updateAid = async (req,res) =>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -113,14 +113,14 @@ const updateConsejo = async (req,res) =>{
     try{
 
         const data = req.body;
-        data.id_user = req.id;
+        data.idUser = req.id;
 
-        await Consejo.findByIdAndUpdate(id, data, {new: true})
-            .then( consejo => {
+        await Aid.findByIdAndUpdate(id, data, {new: true})
+            .then( data => {
                 res.status(201).json({
                     ok: true,
                     msg: 'Consejo actualizado',
-                    consejo
+                    data
                 })
             });
 
@@ -137,9 +137,9 @@ const updateConsejo = async (req,res) =>{
  * Método para eliminar un consejo.
  * - Si eres usuario no puedes acceder.
  */
-const deleteConsejo = async (req,res) =>{
+const deleteAid = async (req,res) =>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -150,12 +150,13 @@ const deleteConsejo = async (req,res) =>{
 
     try{
 
-        await Consejo.findByIdAndDelete(id).then( consejo => {
-            res.status(201).json({
-                ok: true,
-                msg: 'Consejo eliminado',
-                consejo
-            });
+        await Aid.findByIdAndDelete(id)
+            .then( data => {
+                res.status(201).json({
+                    ok: true,
+                    msg: 'Consejo eliminado',
+                    data
+                });
         });
 
     }catch (error) {
@@ -168,9 +169,9 @@ const deleteConsejo = async (req,res) =>{
 }
 
 module.exports = {
-    getConsejos,
-    getOneConsejo,
-    createConsejo,
-    updateConsejo,
-    deleteConsejo
+    getAids,
+    getOneAid,
+    createAid,
+    updateAid,
+    deleteAid
 }

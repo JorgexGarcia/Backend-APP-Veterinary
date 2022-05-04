@@ -9,7 +9,7 @@ const PetSchema = Schema ({
     img: {
         type: String
     },
-    birth_date: {
+    birthDate: {
         type: Date,
         required: true
     },
@@ -21,10 +21,10 @@ const PetSchema = Schema ({
         type: String,
         unique: true
     },
-    id_user:{
+    idUser:{
         required:true,
         type: Schema.Types.ObjectId,
-        ref: 'Usuario'
+        ref: 'User'
     },
     sex: {
         required: true,
@@ -47,7 +47,7 @@ const PetSchema = Schema ({
     race: {
         required: true,
         type: Schema.Types.ObjectId,
-        ref: 'Raza'
+        ref: 'Breed'
     },
     type: {
         type: String,
@@ -55,20 +55,20 @@ const PetSchema = Schema ({
     },
     queries: [{
         type: Schema.Types.ObjectId,
-        ref: 'Consulta'
+        ref: 'Queries'
     }],
-    next_queries: [{
+    nextQueries: [{
         type: Schema.Types.ObjectId,
-        ref: 'Consulta'
+        ref: 'Queries'
     }],
     treatment: [{
         type: Schema.Types.ObjectId,
-        ref: 'Tratamiento'
+        ref: 'Treatment'
     }],
     comment: [{
         type: String
     }],
-    create_Date: {
+    createDate: {
         type: Date,
         required: true
     },
@@ -76,14 +76,14 @@ const PetSchema = Schema ({
         type: Boolean,
         default: true,
     },
-    delete_date: {
+    deleteDate: {
         type: Date
     },
-    delete_user: {
+    deleteUser: {
         type: Schema.Types.ObjectId,
-        ref: 'Usuario'
+        ref: 'User'
     },
-    delete_reason: {
+    deleteReason: {
         type: String
     }
 });

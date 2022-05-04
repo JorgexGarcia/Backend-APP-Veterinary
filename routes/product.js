@@ -1,56 +1,56 @@
 const {Router} = require("express");
-const {getProductos,
-    getOneProducto,
-    createProducto,
-    updateProducto,
-    deleteProducto} = require('../controllers/productos');
+const {getProducts,
+    getOneProduct,
+    createProduct,
+    updateProduct,
+    deleteProduct} = require('../controllers/product');
 const {check} = require("express-validator");
-const {validarCampos} = require("../middlewares/validar-campos");
-const {validarJWT} = require("../middlewares/validar-JWT");
+const {checkField} = require('../middlewares/check-field')
+const {checkJWT} = require("../middlewares/check-JWT");
 
 const router = Router();
 
 router.get('/',
     [
-        validarJWT
+        checkJWT
     ],
-    getProductos
+    getProducts
 );
 
 router.get('/:id',
     [
-        validarJWT
+        checkJWT
     ],
-    getOneProducto
+    getOneProduct
 );
 
 router.post('/',
     [
-        validarJWT,
+        checkJWT,
         check('name', 'El nombre es obligatorio').not().isEmpty(),
         check('description', 'La descripción es obligatoria').not().isEmpty(),
         check('quantity', 'La cantidad es obligatoria').not().isEmpty(),
-        validarCampos
+        checkField
     ],
-    createProducto
+    createProduct
 );
 
 router.put('/:id',
     [
-        validarJWT,
+        checkJWT,
         check('name', 'El nombre es obligatorio').not().isEmpty(),
         check('description', 'La descripción es obligatoria').not().isEmpty(),
         check('quantity', 'La cantidad es obligatoria').not().isEmpty(),
-        validarCampos
+        checkField
     ],
-    updateProducto
+    updateProduct
 );
 
 router.delete('/:id',
     [
-        validarJWT
+        checkJWT
     ],
-    deleteProducto
+    deleteProduct
 );
 
 module.exports = router;

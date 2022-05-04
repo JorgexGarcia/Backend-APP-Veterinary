@@ -1,6 +1,6 @@
-const Usuario = require('../modelos/usuario');
+const User = require('../models/user');
 const bcrypt = require('bcryptjs');
-const {generarJWT} = require("../helpers/jwt");
+const {generateJWT} = require("../helpers/jwt");
 
 const login = async (req,res) =>{
 
@@ -8,27 +8,27 @@ const login = async (req,res) =>{
 
     try{
 
-        const usuarioDB = await Usuario.findOne({email});
+        const userDB = await User.findOne({email});
 
-        if(!usuarioDB) {
+        if(!userDB) {
             res.status(404).json({
                 ok: false,
-                msg: "1 : Constraseña no válida"
+                msg: "Contraseña no válida"
             });
         }
 
         //Comprobar contraseña
-        const validPassword = bcrypt.compareSync(password, usuarioDB.password);
+        const validPassword = bcrypt.compareSync(password, userDB.password);
 
         if(!validPassword){
             res.status(404).json({
                 ok: false,
-                msg: "11 : Constraseña no válida"
+                msg: "Contraseña no válida"
             });
         }
 
         //Generar token
-        const token = await generarJWT(usuarioDB.id);
+        const token = await generateJWT(userDB.id);
 
         res.status(200).json({
             ok: true,

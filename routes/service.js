@@ -3,52 +3,52 @@ const {getServices,
     getOneService,
     createService,
     updateService,
-    deleteService} = require('../controllers/services');
+    deleteService} = require('../controllers/service');
 const {check} = require("express-validator");
-const {validarCampos} = require("../middlewares/validar-campos");
-const {validarJWT} = require("../middlewares/validar-JWT");
+const {checkField} = require('../middlewares/check-field')
+const {checkJWT} = require("../middlewares/check-JWT");
 
 const router = Router();
 
 router.get('/',
     [
-    validarJWT
+        checkJWT
     ],
     getServices
 );
 
 router.get('/:id',
     [
-        validarJWT
+        checkJWT
     ],
     getOneService
 );
 
 router.post('/',
     [
-        validarJWT,
+        checkJWT,
         check('name', 'Tiene que tener un nombre').not().isEmpty(),
         check('description', 'Tiene que tener una descripción').not().isEmpty(),
         check('price', 'Tiene que tener un precio').not().isEmpty(),
-        validarCampos
+        checkField
     ],
     createService
 );
 
 router.put('/:id',
     [
-        validarJWT,
+        checkJWT,
         check('name', 'Tiene que tener un nombre').not().isEmpty,
         check('description', 'Tiene que tener una descripción').not().isEmpty,
         check('price', 'Tiene que tener un precio').not().isEmpty,
-        validarCampos
+        checkField
     ],
     updateService
 );
 
 router.delete('/:id',
     [
-        validarJWT
+        checkJWT
     ],
     deleteService
 );

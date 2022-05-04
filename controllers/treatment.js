@@ -1,20 +1,20 @@
-const Tratamiento = require('../modelos/tratamiento');
-const Pet = require("../modelos/pet");
+const Treatment = require('../models/treatment');
+const Pet = require("../models/pet");
 
 /**
  * Método para conseguir todos los tratamientos.
  */
-const getTratamientos = async (req,res) =>{
+const getTreatments = async (req,res) =>{
 
     try{
 
-        await Tratamiento.find()
-            .populate(['id_pet', 'id_user', 'delete_user'])
-            .then( tratamientos => {
+        await Treatment.find()
+            .populate(['idPet', 'idUser', 'deleteUser'])
+            .then( data => {
             res.status(200).json({
                 ok: true,
                 msg: "Listado de tratamientos",
-                tratamientos
+                data
             })
         });
 
@@ -31,19 +31,19 @@ const getTratamientos = async (req,res) =>{
 /**
  * Método para conseguir un tratamiento según su id enviada por la url.
  */
-const getOneTratamiento = async (req,res)=>{
+const getOneTreatment = async (req,res)=>{
 
     const id = req.params.id;
 
     try{
 
-        await Tratamiento.findById(id)
-            .populate(['id_pet', 'id_user', 'delete_user'])
-            .then( tratamiento => {
+        await Treatment.findById(id)
+            .populate(['idPet', 'idUser', 'deleteUser'])
+            .then( data => {
             res.status(200).json({
                 ok: true,
                 msg: "Tratamiento",
-                tratamiento
+                data
             })
         });
 
@@ -62,33 +62,33 @@ const getOneTratamiento = async (req,res)=>{
  *  - Introducimos el usuario que realiza la petición en el tratamiento.
  *  - Introducimos la id en el apartado de tratamientos del animal.
  */
-const createTratamiento = async (req,res) =>{
+const createTreatment = async (req,res) =>{
 
     try{
 
-        if(req.usuario.rol === 'USER_ROLE'){
+        if(req.user.rol === 'USER_ROLE'){
             return res.status(401).json({
                 ok: false,
                 msg: 'Usuario sin permisos'
             });
         }
 
-        const tratamiento = new Tratamiento ({
-            id_user: req.usuario.id,
+        const treatment = new Treatment({
+            idUser: req.user.id,
             ...req.body
         });
 
-        await tratamiento.save();
+        await treatment.save();
 
-        const petParent = await Pet.findById(tratamiento.id_pet);
-        petParent.treatment.push(tratamiento.id);
+        const petParent = await Pet.findById(treatment.idPet);
+        petParent.treatment.push(treatment.id);
 
-        await Pet.findByIdAndUpdate(tratamiento.id_pet, petParent);
+        await Pet.findByIdAndUpdate(treatment.idPet, petParent);
 
         res.status(201).json({
             ok: true,
             msg: 'Tratamiento creado',
-            tratamiento
+            data: treatment
         })
 
     }catch (error) {
@@ -105,9 +105,9 @@ const createTratamiento = async (req,res) =>{
  *  - Sin eres usuario no puedes acceder al método.
  *  - Introducimos el usuario que realiza la petición en el tratamiento.
  */
-const updateTratamiento = async (req,res) =>{
+const updateTreatment = async (req,res) =>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -118,15 +118,18 @@ const updateTratamiento = async (req,res) =>{
 
     try{
 
-        const data = req.body;
-        data.id_user = req.id;
+        //Elementos que no se pueden actualizar
+        const {active, deleteDate, deleteUser, deleteReason, ...fields} = req.body;
 
-        await Tratamiento.findByIdAndUpdate(id, data, {new: true})
-            .then( tratamiento => {
+        const data = fields;
+        data.idUser = req.id;
+
+        await Treatment.findByIdAndUpdate(id, data, {new: true})
+            .then( data => {
                 res.status(201).json({
                     ok: true,
                     msg: 'Tratamiento actualizado',
-                    tratamiento
+                    data
                 })
             });
 
@@ -146,9 +149,9 @@ const updateTratamiento = async (req,res) =>{
  *      motivo y usuario que la desea eliminar.
  *  - Eliminamos el tratamiento del animal
  */
-const deleteTratamiento = async (req,res) =>{
+const deleteTreatment = async (req,res) =>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -159,31 +162,31 @@ const deleteTratamiento = async (req,res) =>{
 
     try{
 
-        const data = await Tratamiento.findById(id);
+        const data = await Treatment.findById(id);
 
         if(!data){
             res.status(404).json({
                 ok: false,
-                msg: "No se encontro el tratamiento"
+                msg: "No se encontró el tratamiento"
             });
         }
 
         data.active = false;
-        data.delete_date = Date.now();
-        data.delete_reason = req.body.reason || 'Sin motivo';
-        data.delete_user = req.usuario.id;
+        data.deleteDate = Date.now();
+        data.deleteReason = req.body.reason || 'Sin motivo';
+        data.deleteUser = req.user.id;
 
-        const petParent = await Pet.findById(data.id_pet);
+        const petParent = await Pet.findById(data.idPet);
         const num = petParent.treatment.indexOf(id);
         petParent.treatment.splice(num, 1);
-        await Pet.findByIdAndUpdate(data.id_pet, petParent);
+        await Pet.findByIdAndUpdate(data.idPet, petParent);
 
-        await Tratamiento.findByIdAndUpdate(id, data, {new: true})
-            .then( tratamiento => {
+        await Treatment.findByIdAndUpdate(id, data, {new: true})
+            .then( data => {
             res.status(201).json({
                 ok: true,
                 msg: 'Tratamiento eliminado',
-                tratamiento
+                data
             });
         });
 
@@ -197,9 +200,9 @@ const deleteTratamiento = async (req,res) =>{
 }
 
 module.exports = {
-    getTratamientos,
-    getOneTratamiento,
-    createTratamiento,
-    updateTratamiento,
-    deleteTratamiento
+    getTreatments,
+    getOneTreatment,
+    createTreatment,
+    updateTreatment,
+    deleteTreatment
 }

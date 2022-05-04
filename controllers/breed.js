@@ -1,27 +1,27 @@
-const Raza = require('../modelos/raza');
+const Breed = require('../models/breed');
 
 /**
  * Método para obtener el listado de razas.
  *  - Si eres Usuario no puedes acceder al método.
  */
-const getRazas = async (req,res) =>{
+const getBreeds = async (req,res) =>{
 
     try{
 
-        if(req.usuario.rol === 'USER_ROLE'){
+        if(req.user.rol === 'USER_ROLE'){
             return res.status(401).json({
                 ok: false,
                 msg: 'Usuario sin permisos'
             });
         }
 
-        await Raza.find()
-            .populate('delete_user')
-            .then( razas => {
+        await Breed.find()
+            .populate('deleteUser')
+            .then( data => {
             res.status(200).json({
                 ok: true,
                 msg: "Listado de razas",
-                razas
+                data
             })
         });
 
@@ -39,9 +39,9 @@ const getRazas = async (req,res) =>{
  * Método para obtener una raza.
  *  - Si eres Usuario no puedes acceder al método.
  */
-const getOneRaza = async (req,res)=>{
+const getOneBreed = async (req,res)=>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -52,13 +52,13 @@ const getOneRaza = async (req,res)=>{
 
     try{
 
-        await Raza.findById(id)
-            .populate('delete_user')
-            .then( raza => {
+        await Breed.findById(id)
+            .populate('deleteUser')
+            .then( data => {
             res.status(200).json({
                 ok: true,
                 msg: "Raza",
-                raza
+                data
             });
         });
 
@@ -75,25 +75,25 @@ const getOneRaza = async (req,res)=>{
  * Método para crear una raza.
  *  - Si eres Usuario no puedes acceder al método.
  */
-const createRaza = async (req,res) =>{
+const createBreed = async (req,res) =>{
 
     try{
 
-        if(req.usuario.rol === 'USER_ROLE'){
+        if(req.user.rol === 'USER_ROLE'){
             return res.status(401).json({
                 ok: false,
                 msg: 'Usuario sin permisos'
             });
         }
 
-        const raza = new Raza (req.body);
+        const breed = new Breed(req.body);
 
-        await raza.save();
+        await breed.save();
 
         res.status(201).json({
             ok: true,
             msg: 'Raza creada',
-            raza
+            data: breed
         })
 
     }catch (error) {
@@ -109,9 +109,9 @@ const createRaza = async (req,res) =>{
  * Método para actualizar una raza.
  *  - Si eres Usuario no puedes acceder al método.
  */
-const updateRaza = async (req,res) =>{
+const updateBreed = async (req,res) =>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -122,12 +122,15 @@ const updateRaza = async (req,res) =>{
 
     try{
 
-        await Raza.findByIdAndUpdate(id, req.body, {new: true})
-            .then( raza => {
+        //Elementos que no se pueden actualizar
+        const {active, deleteDate, deleteUser, deleteReason, ...fields} = req.body;
+
+        await Breed.findByIdAndUpdate(id, fields, {new: true})
+            .then( data => {
                 res.status(201).json({
                     ok: true,
                     msg: 'Raza actualizada',
-                    raza
+                    data
                 })
             });
 
@@ -146,9 +149,9 @@ const updateRaza = async (req,res) =>{
  *  - No eliminamos la raza, lo marcamos como no activo, guardamos la fecha,
  *      el motivo y el usuario que lo desea eliminar
  */
-const deleteRaza = async (req,res) =>{
+const deleteBreed = async (req,res) =>{
 
-    if(req.usuario.rol === 'USER_ROLE'){
+    if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -159,26 +162,26 @@ const deleteRaza = async (req,res) =>{
 
     try{
 
-        const data = await Raza.findById(id);
+        const data = await Breed.findById(id);
 
         if(!data){
             res.status(404).json({
                 ok: false,
-                msg: "No se encontro la raza"
+                msg: "No se encontró la raza"
             });
         }
 
         data.active = false;
-        data.delete_date = Date.now();
-        data.delete_reason = req.body.reason || 'Sin motivo';
-        data.delete_user = req.usuario.id;
+        data.deleteDate = Date.now();
+        data.deleteReason = req.body.reason || 'Sin motivo';
+        data.deleteUser = req.user.id;
 
-        await Raza.findByIdAndUpdate(id, data, {new: true})
-            .then( raza => {
+        await Breed.findByIdAndUpdate(id, data, {new: true})
+            .then( data => {
             res.status(201).json({
                 ok: true,
                 msg: 'Raza eliminada',
-                raza
+                data
             });
         });
 
@@ -192,9 +195,9 @@ const deleteRaza = async (req,res) =>{
 }
 
 module.exports = {
-    getRazas,
-    getOneRaza,
-    createRaza,
-    updateRaza,
-    deleteRaza
+    getBreeds,
+    getOneBreed,
+    createBreed,
+    updateBreed,
+    deleteBreed
 }

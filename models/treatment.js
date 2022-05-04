@@ -1,26 +1,26 @@
 const {Schema, model} = require('mongoose');
 
-const TratamientoSchema = Schema ({
+const TreatmentSchema = Schema ({
 
-    start_date: {
+    startDate: {
         type: Date,
         required: true
     },
-    finish_date: {
+    finishDate: {
         type: Date
     },
     description: {
         type: String,
         required: true
     },
-    id_pet:{
+    idPet:{
         required:true,
         type: Schema.Types.ObjectId,
         ref: 'Pet'
     },
-    id_user:{
+    idUser:{
         type: Schema.Types.ObjectId,
-        ref: 'Usuario'
+        ref: 'User'
     },
     name: {
         required: true,
@@ -30,24 +30,24 @@ const TratamientoSchema = Schema ({
         type: Boolean,
         default: true,
     },
-    delete_date: {
+    deleteDate: {
         type: Date
     },
-    delete_user: {
+    deleteUser: {
         type: Schema.Types.ObjectId,
-        ref: 'Usuario'
+        ref: 'User'
     },
-    delete_reason: {
+    deleteReason: {
         type: String
     }
 });
 
 //Para cambiar el nombre a un atributo o no visualizar uno que no quieres
-TratamientoSchema.method('toJSON', function() {
+TreatmentSchema.method('toJSON', function() {
     const {__v, _id, ...object} = this.toObject();
     object.id = _id;
     return object;
 })
 
 
-module.exports = model('Tratamiento', TratamientoSchema);
+module.exports = model('Treatment', TreatmentSchema);

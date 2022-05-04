@@ -1,37 +1,37 @@
 const {Router} = require("express");
-const {getConsultas,
-        createConsulta,
-        getOneConsulta,
-        updateConsulta,
-        deleteConsulta} = require('../controllers/consultas');
+const {getQueries,
+        createQueries,
+        getOneQueries,
+        updateQueries,
+        deleteQueries} = require('../controllers/queries');
 const {check} = require("express-validator");
-const {validarCampos} = require("../middlewares/validar-campos");
-const {validarJWT} = require("../middlewares/validar-JWT");
+const {checkField} = require('../middlewares/check-field')
+const {checkJWT} = require("../middlewares/check-JWT");
 
 const router = Router();
 
 router.get('/',
     [
-        validarJWT
+        checkJWT
     ],
-    getConsultas
+    getQueries
 );
 
 router.get('/:id',
     [
-            validarJWT
+        checkJWT
     ],
-    getOneConsulta
+    getOneQueries
 );
 
 router.post('/',
     [
-        validarJWT,
+        checkJWT,
         check('type', 'El tipo tiene que ser obligatorio').not().isEmpty(),
-        check('id_pet', 'La id del animal tiene que ser obligatoria').not()
+        check('idPet', 'La id del animal tiene que ser obligatoria').not()
             .isEmpty()
             .isMongoId(),
-        check('id_user', 'La id del trabajador tiene que ser obligatoria').not()
+        check('idUser', 'La id del trabajador tiene que ser obligatoria').not()
             .isEmpty()
             .isMongoId(),
         check('description', 'La descripción tiene que ser obligatoria').not().isEmpty(),
@@ -39,19 +39,19 @@ router.post('/',
             .isEmpty()
             .isMongoId(),
         check('date', 'La fecha tiene que ser obligatoria').not().isEmpty(),
-        validarCampos
+        checkField
     ],
-    createConsulta
+    createQueries
 );
 
 router.put('/:id',
     [
-        validarJWT,
+        checkJWT,
         check('type', 'El tipo tiene que ser obligatorio').not().isEmpty(),
-        check('id_pet', 'La id del animal tiene que ser obligatoria').not()
+        check('idPet', 'La id del animal tiene que ser obligatoria').not()
             .isEmpty()
             .isMongoId(),
-        check('id_user', 'La id del trabajador tiene que ser obligatoria').not()
+        check('idUser', 'La id del trabajador tiene que ser obligatoria').not()
             .isEmpty()
             .isMongoId(),
         check('description', 'La descripción tiene que ser obligatoria').not().isEmpty(),
@@ -59,16 +59,16 @@ router.put('/:id',
             .isEmpty()
             .isMongoId(),
         check('date', 'La fecha tiene que ser obligatoria').not().isEmpty(),
-        validarCampos
+        checkField
     ],
-    updateConsulta
+    updateQueries
 );
 
 router.delete('/:id',
     [
-        validarJWT
+        checkJWT
     ],
-    deleteConsulta
+    deleteQueries
 );
 
 module.exports = router;

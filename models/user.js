@@ -1,12 +1,12 @@
 const {Schema, model} = require('mongoose');
 
-const UsuarioSchema = Schema ({
+const UserSchema = Schema ({
 
     name: {
         type: String,
         required: true
     },
-    last_name:{
+    lastName:{
         type: String,
         required: true
     },
@@ -30,11 +30,11 @@ const UsuarioSchema = Schema ({
         type: String,
         default: 'EMAIL'
     },
-    list_pets: [{
+    listPets: [{
         type: Schema.Types.ObjectId,
         ref: 'Pet'
     }],
-    birth_date: {
+    birthDate: {
         type: Date,
         required: true
     },
@@ -64,30 +64,30 @@ const UsuarioSchema = Schema ({
     }],
     promotions: [{
         type: Schema.Types.ObjectId,
-        ref: 'Promocion'
+        ref: 'Promotion'
     }],
     active: {
         type: Boolean,
         default: true,
     },
-    delete_date: {
+    deleteDate: {
         type: Date
     },
-    delete_user: {
+    deleteUser: {
         type: Schema.Types.ObjectId,
-        ref: 'Usuario'
+        ref: 'User'
     },
-    delete_reason: {
+    deleteReason: {
         type: String
     }
 });
 
 //Para cambiar el nombre a un atributo o no visualizar uno que no quieres
-UsuarioSchema.method('toJSON', function() {
+UserSchema.method('toJSON', function() {
     const {__v, _id, password, ...object} = this.toObject();
     object.id = _id;
     return object;
 })
 
 
-module.exports = model('Usuario', UsuarioSchema);
+module.exports = model('User', UserSchema);
