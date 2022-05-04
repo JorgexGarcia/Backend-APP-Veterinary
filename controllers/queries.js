@@ -16,17 +16,27 @@ const getQueries = async (req,res) =>{
 
     try{
 
-        await Queries.find()
-            .populate(['idPet', 'idUser', 'service',
-                'treatment', 'deleteUser'])
-            .then( data => {
-            res.status(200).json({
-                ok: true,
-                msg: "Listado de consultas",
-                data
-            })
-        });
+        const from = (Number(req.query.page) || 0) * 5;
 
+        const [data , total] = await Promise.all([
+            Queries.find()
+                .skip( from )
+                .limit(5)
+                .populate('idPet', 'name img')
+                .populate('service', 'name')
+                .populate('treatment', 'name')
+                .populate('idUser', 'name lastName img')
+                .populate('deleteUser', 'name lastName img'),
+
+            Queries.count()
+        ]);
+
+        res.status(200).json({
+            ok: true,
+            msg: "Listado de consultas",
+            data,
+            total
+        });
 
     }catch (error) {
         res.status(500).json({
@@ -55,8 +65,11 @@ const getOneQueries = async (req,res)=>{
     try{
 
         await Queries.findById(id)
-            .populate(['idPet', 'idUser', 'service',
-                'treatment', 'deleteUser'])
+            .populate('idPet', 'name img')
+            .populate('service', 'name')
+            .populate('treatment', 'name')
+            .populate('idUser', 'name lastName img')
+            .populate('deleteUser', 'name lastName img')
             .then( data => {
             res.status(200).json({
                 ok: true,

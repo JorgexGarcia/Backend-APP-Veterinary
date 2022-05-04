@@ -7,16 +7,23 @@ const getPromotions = async (req,res) =>{
 
     try{
 
-        await Promotion.find()
-            .populate('deleteUser')
-            .then( data => {
-                res.status(200).json({
-                    ok: true,
-                    msg: "Listado de promociones",
-                    data
-                })
-        });
+        const from = (Number(req.query.page) || 0) * 5;
 
+        const [data , total] = await Promise.all([
+            Promotion.find()
+                .skip( from )
+                .limit(5)
+                .populate('deleteUser', 'name lastName img'),
+
+            Promotion.count()
+        ]);
+
+        res.status(200).json({
+            ok: true,
+            msg: "Listado de promociones",
+            data,
+            total
+        });
 
     }catch (error) {
         res.status(500).json({
@@ -37,7 +44,7 @@ const getOnePromotion = async (req,res)=>{
     try{
 
         await Promotion.findById(id)
-            .populate('deleteUser')
+            .populate('deleteUser', 'name lastName img')
             .then( data => {
             res.status(200).json({
                 ok: true,

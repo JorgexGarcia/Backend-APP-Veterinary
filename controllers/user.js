@@ -15,14 +15,25 @@ const getUsers = async (req,res) =>{
                 msg: 'Usuario sin permisos'
             });
         }else{
-            await User.find()
-                .populate(['listPets', 'promotions', 'deleteUser'])
-                .then( data => {
-                res.status(200).json({
-                    ok: true,
-                    msg: "Listado de usuarios",
-                    data
-                })
+
+            const from = (Number(req.query.page) || 0) * 5;
+
+            const [data , total] = await Promise.all([
+                User.find()
+                    .skip( from )
+                    .limit(5)
+                    .populate('listPets', 'name img' )
+                    .populate('promotions', 'name img')
+                    .populate('deleteUser', 'name lastName img'),
+
+                User.count()
+            ]);
+
+            res.status(200).json({
+                ok: true,
+                msg: "Listado de usuarios",
+                data,
+                total
             });
         }
 
@@ -51,7 +62,11 @@ const getOneUser = async (req,res)=>{
                 msg: 'Usuario sin permisos'
             });
         }else{
-            await User.findById(id).then( data => {
+            await User.findById(id)
+                .populate('listPets', 'name img' )
+                .populate('promotions', 'name img')
+                .populate('deleteUser', 'name lastName img')
+                .then( data => {
                 res.status(200).json({
                     ok: true,
                     msg: "Usuario",

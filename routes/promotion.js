@@ -16,7 +16,7 @@ router.get('/',
 
 router.get('/:id',
     [
-        validarJWT
+        checkJWT
     ],
     getOnePromotion
 );

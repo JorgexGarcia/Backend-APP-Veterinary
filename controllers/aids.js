@@ -1,6 +1,5 @@
 const Aid = require('../models/aids');
 
-
 /**
  * Método para obtener el listado de consejos
  */
@@ -8,16 +7,23 @@ const getAids = async (req,res) =>{
 
     try{
 
-        await Aid.find()
-            .populate('idUser')
-            .then( data => {
-            res.status(200).json({
-                ok: true,
-                msg: "Listado de consejos",
-                data
-            })
-        });
+        const from = (Number(req.query.page) || 0) * 5;
 
+        const [data , total] = await Promise.all([
+            Aid.find()
+                .skip( from )
+                .limit(5)
+                .populate('idUser', 'name lastName img'),
+
+            Aid.count()
+        ]);
+
+        res.status(200).json({
+            ok: true,
+            msg: "Listado de consejos",
+            data,
+            total
+        });
 
     }catch (error) {
         res.status(500).json({
@@ -38,7 +44,7 @@ const getOneAid = async (req,res)=>{
     try{
 
         await Aid.findById(id)
-            .populate('idUser')
+            .populate('idUser', 'name lastName img')
             .then( data => {
             res.status(200).json({
                 ok: true,

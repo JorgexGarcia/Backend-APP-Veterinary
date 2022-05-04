@@ -15,14 +15,22 @@ const getProducts = async (req,res) =>{
 
     try{
 
-        await Product.find().then( data => {
-            res.status(200).json({
-                ok: true,
-                msg: "Listado de productos",
-                data
-            })
-        });
+        const from = (Number(req.query.page) || 0) * 5;
 
+        const [data , total] = await Promise.all([
+            Product.find()
+                .skip( from )
+                .limit(5),
+
+            Product.count()
+        ]);
+
+        res.status(200).json({
+            ok: true,
+            msg: "Listado de productos",
+            data,
+            total
+        });
 
     }catch (error) {
         res.status(500).json({

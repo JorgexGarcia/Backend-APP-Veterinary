@@ -16,17 +16,28 @@ const getPets = async (req,res) =>{
 
     try{
 
-        await Pet.find()
-            .populate(['idUser','race', 'queries',
-                'nextQueries', 'treatment', 'deleteUser'])
-            .then( data => {
-            res.status(200).json({
-                ok: true,
-                msg: "Listado de animales",
-                data
-            })
-        });
+        const from = (Number(req.query.page) || 0) * 5;
 
+        const [data , total] = await Promise.all([
+            Pet.find()
+                .skip( from )
+                .limit(5)
+                .populate('breed', 'name')
+                .populate('treatment', 'name')
+                .populate('nextQueries', 'type')
+                .populate('queries', 'type')
+                .populate('idUser', 'name lastName img')
+                .populate('deleteUser', 'name lastName img'),
+
+            Pet.count()
+        ]);
+
+        res.status(200).json({
+            ok: true,
+            msg: "Listado de animales",
+            data,
+            total
+        });
 
     }catch (error) {
         res.status(500).json({
@@ -55,8 +66,12 @@ const getOnePet = async (req,res)=>{
     try{
 
         await Pet.findById(id)
-            .populate(['idUser','race', 'queries',
-                'nextQueries', 'treatment', 'deleteUser'])
+            .populate('breed', 'name')
+            .populate('treatment', 'name')
+            .populate('nextQueries', 'type')
+            .populate('queries', 'type')
+            .populate('idUser', 'name lastName img')
+            .populate('deleteUser', 'name lastName img')
             .then( data => {
             res.status(200).json({
                 ok: true,

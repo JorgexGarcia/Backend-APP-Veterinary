@@ -15,16 +15,23 @@ const getBreeds = async (req,res) =>{
             });
         }
 
-        await Breed.find()
-            .populate('deleteUser')
-            .then( data => {
-            res.status(200).json({
-                ok: true,
-                msg: "Listado de razas",
-                data
-            })
-        });
+        const from = (Number(req.query.page) || 0) * 5;
 
+        const [data , total] = await Promise.all([
+            Breed.find()
+                .skip( from )
+                .limit(5)
+                .populate('deleteUser', 'name lastName img'),
+
+            Breed.count()
+        ]);
+
+        res.status(200).json({
+            ok: true,
+            msg: "Listado de razas",
+            data,
+            total
+        });
 
     }catch (error) {
         res.status(500).json({
@@ -53,7 +60,7 @@ const getOneBreed = async (req,res)=>{
     try{
 
         await Breed.findById(id)
-            .populate('deleteUser')
+            .populate('deleteUser', 'name lastName img')
             .then( data => {
             res.status(200).json({
                 ok: true,

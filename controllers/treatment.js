@@ -8,16 +8,25 @@ const getTreatments = async (req,res) =>{
 
     try{
 
-        await Treatment.find()
-            .populate(['idPet', 'idUser', 'deleteUser'])
-            .then( data => {
-            res.status(200).json({
-                ok: true,
-                msg: "Listado de tratamientos",
-                data
-            })
-        });
+        const from = (Number(req.query.page) || 0) * 5;
 
+        const [data , total] = await Promise.all([
+            Treatment.find()
+                .skip( from )
+                .limit(5)
+                .populate('idPet', 'name img')
+                .populate('idUser', 'name lastName img')
+                .populate('deleteUser', 'name lastName img'),
+
+            Treatment.count()
+        ]);
+
+        res.status(200).json({
+            ok: true,
+            msg: "Listado de tratamientos",
+            data,
+            total
+        });
 
     }catch (error) {
         res.status(500).json({
@@ -38,7 +47,9 @@ const getOneTreatment = async (req,res)=>{
     try{
 
         await Treatment.findById(id)
-            .populate(['idPet', 'idUser', 'deleteUser'])
+            .populate('idPet', 'name img')
+            .populate('idUser', 'name lastName img')
+            .populate('deleteUser', 'name lastName img')
             .then( data => {
             res.status(200).json({
                 ok: true,
