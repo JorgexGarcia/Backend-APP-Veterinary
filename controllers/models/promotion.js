@@ -1,34 +1,26 @@
-const Breed = require('../models/breed');
+const Promotion = require('../../models/promotion');
 
 /**
- * Método para obtener el listado de razas.
- *  - Si eres Usuario no puedes acceder al método.
+ * Método para obtener todas las promociones.
  */
-const getBreeds = async (req,res) =>{
+const getPromotions = async (req,res) =>{
 
     try{
-
-        if(req.user.rol === 'USER_ROLE'){
-            return res.status(401).json({
-                ok: false,
-                msg: 'Usuario sin permisos'
-            });
-        }
 
         const from = (Number(req.query.page) || 0) * 5;
 
         const [data , total] = await Promise.all([
-            Breed.find()
+            Promotion.find()
                 .skip( from )
                 .limit(5)
                 .populate('deleteUser', 'name lastName img'),
 
-            Breed.count()
+            Promotion.count()
         ]);
 
         res.status(200).json({
             ok: true,
-            msg: "Listado de razas",
+            msg: "Listado de promociones",
             data,
             total
         });
@@ -43,28 +35,20 @@ const getBreeds = async (req,res) =>{
 }
 
 /**
- * Método para obtener una raza.
- *  - Si eres Usuario no puedes acceder al método.
+ * Método para obtener una promoción.
  */
-const getOneBreed = async (req,res)=>{
-
-    if(req.user.rol === 'USER_ROLE'){
-        return res.status(401).json({
-            ok: false,
-            msg: 'Usuario sin permisos'
-        });
-    }
+const getOnePromotion = async (req,res)=>{
 
     const id = req.params.id;
 
     try{
 
-        await Breed.findById(id)
+        await Promotion.findById(id)
             .populate('deleteUser', 'name lastName img')
             .then( data => {
             res.status(200).json({
                 ok: true,
-                msg: "Raza",
+                msg: "Promoción",
                 data
             });
         });
@@ -75,14 +59,13 @@ const getOneBreed = async (req,res)=>{
             msg: "Error inesperado...., llame a su administrador"
         });
     }
-
 }
 
 /**
- * Método para crear una raza.
+ * Método para crear una promoción.
  *  - Si eres Usuario no puedes acceder al método.
  */
-const createBreed = async (req,res) =>{
+const createPromotion = async (req,res) =>{
 
     try{
 
@@ -93,14 +76,14 @@ const createBreed = async (req,res) =>{
             });
         }
 
-        const breed = new Breed(req.body);
+        const promotion = new Promotion (req.body);
 
-        await breed.save();
+        await promotion.save();
 
         res.status(201).json({
             ok: true,
-            msg: 'Raza creada',
-            data: breed
+            msg: 'Promoción creada',
+            data: promotion
         })
 
     }catch (error) {
@@ -113,10 +96,10 @@ const createBreed = async (req,res) =>{
 }
 
 /**
- * Método para actualizar una raza.
+ * Método para actualizar una promoción.
  *  - Si eres Usuario no puedes acceder al método.
  */
-const updateBreed = async (req,res) =>{
+const updatePromotion = async (req,res) =>{
 
     if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
@@ -129,14 +112,13 @@ const updateBreed = async (req,res) =>{
 
     try{
 
-        //Elementos que no se pueden actualizar
         const {active, deleteDate, deleteUser, deleteReason, ...fields} = req.body;
 
-        await Breed.findByIdAndUpdate(id, fields, {new: true})
+        await Promotion.findByIdAndUpdate(id, fields, {new: true})
             .then( data => {
                 res.status(201).json({
                     ok: true,
-                    msg: 'Raza actualizada',
+                    msg: 'Promoción actualizado',
                     data
                 })
             });
@@ -151,12 +133,12 @@ const updateBreed = async (req,res) =>{
 }
 
 /**
- * Método para borrar una raza.
+ * Método para eliminar una promoción.
  *  - Si eres Usuario no puedes acceder al método.
- *  - No eliminamos la raza, lo marcamos como no activo, guardamos la fecha,
+ *  - No eliminamos la promoción, lo marcamos como no activo, guardamos la fecha,
  *      el motivo y el usuario que lo desea eliminar
  */
-const deleteBreed = async (req,res) =>{
+const deletePromotion = async (req,res) =>{
 
     if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
@@ -169,12 +151,12 @@ const deleteBreed = async (req,res) =>{
 
     try{
 
-        const data = await Breed.findById(id);
+        const data = await Promotion.findById(id);
 
         if(!data){
             res.status(404).json({
                 ok: false,
-                msg: "No se encontró la raza"
+                msg: "No se encontró la promoción"
             });
         }
 
@@ -183,11 +165,11 @@ const deleteBreed = async (req,res) =>{
         data.deleteReason = req.body.reason || 'Sin motivo';
         data.deleteUser = req.user.id;
 
-        await Breed.findByIdAndUpdate(id, data, {new: true})
+        await Promotion.findByIdAndUpdate(id, data, {new: true})
             .then( data => {
             res.status(201).json({
                 ok: true,
-                msg: 'Raza eliminada',
+                msg: 'Promoción eliminada',
                 data
             });
         });
@@ -202,9 +184,9 @@ const deleteBreed = async (req,res) =>{
 }
 
 module.exports = {
-    getBreeds,
-    getOneBreed,
-    createBreed,
-    updateBreed,
-    deleteBreed
+    getPromotions,
+    getOnePromotion,
+    createPromotion,
+    updatePromotion,
+    deletePromotion
 }

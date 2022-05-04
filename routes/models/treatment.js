@@ -3,10 +3,10 @@ const {getTreatments,
     getOneTreatment,
     createTreatment,
     updateTreatment,
-    deleteTreatment} = require('../controllers/treatment');
-const {checkField} = require('../middlewares/check-field')
+    deleteTreatment} = require('../../controllers/models/treatment');
+const {checkField} = require('../../middlewares/check-field')
 const {check} = require("express-validator");
-const {checkJWT} = require("../middlewares/check-JWT");
+const {checkJWT} = require("../../middlewares/check-JWT");
 
 const router = Router();
 

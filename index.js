@@ -20,19 +20,24 @@ app.use(express.static('public'));
 
 
 //Rutas
-app.use('/api/user', require('./routes/user'));
-app.use('/api/queries', require('./routes/queries'));
-app.use('/api/promotion', require('./routes/promotion'));
-app.use('/api/aids', require('./routes/aids'));
-app.use('/api/pet', require('./routes/pet'));
-app.use('/api/product', require('./routes/product'));
-app.use('/api/service', require('./routes/service'));
-app.use('/api/treatment', require('./routes/treatment'));
-app.use('/api/breed', require('./routes/breed'));
+app.use('/api/user', require('./routes/models/user'));
+app.use('/api/queries', require('./routes/models/queries'));
+app.use('/api/promotion', require('./routes/models/promotion'));
+app.use('/api/aids', require('./routes/models/aids'));
+app.use('/api/pet', require('./routes/models/pet'));
+app.use('/api/product', require('./routes/models/product'));
+app.use('/api/service', require('./routes/models/service'));
+app.use('/api/treatment', require('./routes/models/treatment'));
+app.use('/api/breed', require('./routes/models/breed'));
 
-app.use('/api/login', require('./routes/auth'));
+//Login
+app.use('/api/auth', require('./routes/auth/auth'));
 
-app.use('/api/search', require('./routes/search'));
+//Search
+app.use('/api/search', require('./routes/search/search'));
+
+//Archivos
+app.use('/api/upload', require('./routes/upload/upload'));
 
 /*
 app.get('*', (req, res) => {

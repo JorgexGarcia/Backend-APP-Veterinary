@@ -3,10 +3,10 @@ const {getBreeds,
     getOneBreed,
     createBreed,
     updateBreed,
-    deleteBreed} = require('../controllers/breed');
+    deleteBreed} = require('../../controllers/models/breed');
 const {check} = require("express-validator");
-const {checkField} = require('../middlewares/check-field')
-const {checkJWT} = require("../middlewares/check-JWT");
+const {checkField} = require('../../middlewares/check-field')
+const {checkJWT} = require("../../middlewares/check-JWT");
 
 const router = Router();
 

@@ -3,10 +3,10 @@ const {getProducts,
     getOneProduct,
     createProduct,
     updateProduct,
-    deleteProduct} = require('../controllers/product');
+    deleteProduct} = require('../../controllers/models/product');
 const {check} = require("express-validator");
-const {checkField} = require('../middlewares/check-field')
-const {checkJWT} = require("../middlewares/check-JWT");
+const {checkField} = require('../../middlewares/check-field')
+const {checkJWT} = require("../../middlewares/check-JWT");
 
 const router = Router();
 

@@ -3,10 +3,10 @@ const {getQueries,
         createQueries,
         getOneQueries,
         updateQueries,
-        deleteQueries} = require('../controllers/queries');
+        deleteQueries} = require('../../controllers/models/queries');
 const {check} = require("express-validator");
-const {checkField} = require('../middlewares/check-field')
-const {checkJWT} = require("../middlewares/check-JWT");
+const {checkField} = require('../../middlewares/check-field')
+const {checkJWT} = require("../../middlewares/check-JWT");
 
 const router = Router();
 

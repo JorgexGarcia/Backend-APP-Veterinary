@@ -1,26 +1,26 @@
-const Promotion = require('../models/promotion');
+const Service = require('../../models/service');
 
 /**
- * Método para obtener todas las promociones.
+ * Método para conseguir todos los servicios.
  */
-const getPromotions = async (req,res) =>{
+const getServices = async (req,res) =>{
 
     try{
 
         const from = (Number(req.query.page) || 0) * 5;
 
         const [data , total] = await Promise.all([
-            Promotion.find()
+            Service.find()
                 .skip( from )
                 .limit(5)
                 .populate('deleteUser', 'name lastName img'),
 
-            Promotion.count()
+            Service.count()
         ]);
 
         res.status(200).json({
             ok: true,
-            msg: "Listado de promociones",
+            msg: "Listado de servicios",
             data,
             total
         });
@@ -35,20 +35,20 @@ const getPromotions = async (req,res) =>{
 }
 
 /**
- * Método para obtener una promoción.
+ * Método para conseguir un servicio según su id enviada por la url.
  */
-const getOnePromotion = async (req,res)=>{
+const getOneService = async (req,res)=>{
 
     const id = req.params.id;
 
     try{
 
-        await Promotion.findById(id)
+        await Service.findById(id)
             .populate('deleteUser', 'name lastName img')
             .then( data => {
             res.status(200).json({
                 ok: true,
-                msg: "Promoción",
+                msg: "Servicio",
                 data
             });
         });
@@ -59,13 +59,14 @@ const getOnePromotion = async (req,res)=>{
             msg: "Error inesperado...., llame a su administrador"
         });
     }
+
 }
 
 /**
- * Método para crear una promoción.
- *  - Si eres Usuario no puedes acceder al método.
+ * Método para crear un servicio según la información pasada en la petición.
+ *  - Sin eres usuario no puedes acceder al método.
  */
-const createPromotion = async (req,res) =>{
+const createService = async (req,res) =>{
 
     try{
 
@@ -76,14 +77,14 @@ const createPromotion = async (req,res) =>{
             });
         }
 
-        const promotion = new Promotion (req.body);
+        const service = new Service (req.body);
 
-        await promotion.save();
+        await service.save();
 
-        res.status(201).json({
+        res.status(200).json({
             ok: true,
-            msg: 'Promoción creada',
-            data: promotion
+            msg: 'Servicio creado',
+            data: service
         })
 
     }catch (error) {
@@ -96,10 +97,10 @@ const createPromotion = async (req,res) =>{
 }
 
 /**
- * Método para actualizar una promoción.
- *  - Si eres Usuario no puedes acceder al método.
+ * Método para actualizar un servicio según la información pasada en la petición.
+ *  - Sin eres usuario no puedes acceder al método.
  */
-const updatePromotion = async (req,res) =>{
+const updateService = async (req,res) =>{
 
     if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
@@ -112,13 +113,14 @@ const updatePromotion = async (req,res) =>{
 
     try{
 
+        //Elementos que no se pueden actualizar
         const {active, deleteDate, deleteUser, deleteReason, ...fields} = req.body;
 
-        await Promotion.findByIdAndUpdate(id, fields, {new: true})
+        await Service.findByIdAndUpdate(id, fields, {new: true})
             .then( data => {
                 res.status(201).json({
                     ok: true,
-                    msg: 'Promoción actualizado',
+                    msg: 'Servicio actualizado',
                     data
                 })
             });
@@ -133,12 +135,12 @@ const updatePromotion = async (req,res) =>{
 }
 
 /**
- * Método para eliminar una promoción.
- *  - Si eres Usuario no puedes acceder al método.
- *  - No eliminamos la promoción, lo marcamos como no activo, guardamos la fecha,
+ * Método para eliminar un servicio.
+ *  - Sin eres usuario no puedes acceder al método.
+ *  - No eliminamos el servicio, lo marcamos como no activo, guardamos la fecha,
  *      el motivo y el usuario que lo desea eliminar
  */
-const deletePromotion = async (req,res) =>{
+const deleteService = async (req,res) =>{
 
     if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
@@ -151,12 +153,12 @@ const deletePromotion = async (req,res) =>{
 
     try{
 
-        const data = await Promotion.findById(id);
+        const data = await Service.findById(id);
 
         if(!data){
             res.status(404).json({
                 ok: false,
-                msg: "No se encontró la promoción"
+                msg: "No se encontró el servicio"
             });
         }
 
@@ -165,11 +167,11 @@ const deletePromotion = async (req,res) =>{
         data.deleteReason = req.body.reason || 'Sin motivo';
         data.deleteUser = req.user.id;
 
-        await Promotion.findByIdAndUpdate(id, data, {new: true})
+        await Service.findByIdAndUpdate(id, data, {new: true})
             .then( data => {
             res.status(201).json({
                 ok: true,
-                msg: 'Promoción eliminada',
+                msg: 'Servicio eliminado',
                 data
             });
         });
@@ -184,9 +186,9 @@ const deletePromotion = async (req,res) =>{
 }
 
 module.exports = {
-    getPromotions,
-    getOnePromotion,
-    createPromotion,
-    updatePromotion,
-    deletePromotion
+    getServices,
+    getOneService,
+    createService,
+    updateService,
+    deleteService
 }

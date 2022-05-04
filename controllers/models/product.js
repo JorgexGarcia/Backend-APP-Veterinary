@@ -1,26 +1,33 @@
-const Service = require('../models/service');
+const Product = require('../../models/product');
 
 /**
- * Método para conseguir todos los servicios.
+ * Método para obtener el listado de productos.
+ *  - Si eres Usuario no puedes acceder al método.
  */
-const getServices = async (req,res) =>{
+const getProducts = async (req,res) =>{
+
+    if(req.user.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     try{
 
         const from = (Number(req.query.page) || 0) * 5;
 
         const [data , total] = await Promise.all([
-            Service.find()
+            Product.find()
                 .skip( from )
-                .limit(5)
-                .populate('deleteUser', 'name lastName img'),
+                .limit(5),
 
-            Service.count()
+            Product.count()
         ]);
 
         res.status(200).json({
             ok: true,
-            msg: "Listado de servicios",
+            msg: "Listado de productos",
             data,
             total
         });
@@ -35,20 +42,26 @@ const getServices = async (req,res) =>{
 }
 
 /**
- * Método para conseguir un servicio según su id enviada por la url.
+ * Método para obtener un producto.
+ *  - Si eres Usuario no puedes acceder al método.
  */
-const getOneService = async (req,res)=>{
+const getOneProduct = async (req,res)=>{
+
+    if(req.user.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     const id = req.params.id;
 
     try{
 
-        await Service.findById(id)
-            .populate('deleteUser', 'name lastName img')
-            .then( data => {
+        await Product.findById(id).then( data => {
             res.status(200).json({
                 ok: true,
-                msg: "Servicio",
+                msg: "Producto",
                 data
             });
         });
@@ -63,28 +76,28 @@ const getOneService = async (req,res)=>{
 }
 
 /**
- * Método para crear un servicio según la información pasada en la petición.
- *  - Sin eres usuario no puedes acceder al método.
+ * Método para crear un producto.
+ *  - Si eres Usuario no puedes acceder al método.
  */
-const createService = async (req,res) =>{
+const createProduct = async (req,res) =>{
+
+    if(req.user.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     try{
 
-        if(req.user.rol === 'USER_ROLE'){
-            return res.status(401).json({
-                ok: false,
-                msg: 'Usuario sin permisos'
-            });
-        }
+        const product = new Product(req.body);
 
-        const service = new Service (req.body);
+        await product.save();
 
-        await service.save();
-
-        res.status(200).json({
+        res.status(201).json({
             ok: true,
-            msg: 'Servicio creado',
-            data: service
+            msg: 'Producto creada',
+            data: product
         })
 
     }catch (error) {
@@ -97,10 +110,10 @@ const createService = async (req,res) =>{
 }
 
 /**
- * Método para actualizar un servicio según la información pasada en la petición.
- *  - Sin eres usuario no puedes acceder al método.
+ * Método para actualizar un producto.
+ *  - Si eres Usuario no puedes acceder al método.
  */
-const updateService = async (req,res) =>{
+const updateProduct = async (req,res) =>{
 
     if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
@@ -116,11 +129,11 @@ const updateService = async (req,res) =>{
         //Elementos que no se pueden actualizar
         const {active, deleteDate, deleteUser, deleteReason, ...fields} = req.body;
 
-        await Service.findByIdAndUpdate(id, fields, {new: true})
+        await Product.findByIdAndUpdate(id, fields, {new: true})
             .then( data => {
                 res.status(201).json({
                     ok: true,
-                    msg: 'Servicio actualizado',
+                    msg: 'Producto actualizado',
                     data
                 })
             });
@@ -135,12 +148,12 @@ const updateService = async (req,res) =>{
 }
 
 /**
- * Método para eliminar un servicio.
- *  - Sin eres usuario no puedes acceder al método.
- *  - No eliminamos el servicio, lo marcamos como no activo, guardamos la fecha,
- *      el motivo y el usuario que lo desea eliminar
+ * Método para eliminar un producto.
+ *  - Si eres Usuario no puedes acceder al método.
+ *  - No eliminamos el producto, lo marcamos como no activo, guardamos la fecha,
+ *      el motivo y el usuario que lo desea eliminar.
  */
-const deleteService = async (req,res) =>{
+const deleteProduct = async (req,res) =>{
 
     if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
@@ -153,12 +166,12 @@ const deleteService = async (req,res) =>{
 
     try{
 
-        const data = await Service.findById(id);
+        const data = await Product.findById(id);
 
         if(!data){
             res.status(404).json({
                 ok: false,
-                msg: "No se encontró el servicio"
+                msg: "No se encontró el producto"
             });
         }
 
@@ -167,11 +180,11 @@ const deleteService = async (req,res) =>{
         data.deleteReason = req.body.reason || 'Sin motivo';
         data.deleteUser = req.user.id;
 
-        await Service.findByIdAndUpdate(id, data, {new: true})
+        await Product.findByIdAndUpdate(id, data, {new: true})
             .then( data => {
             res.status(201).json({
                 ok: true,
-                msg: 'Servicio eliminado',
+                msg: 'Producto eliminado',
                 data
             });
         });
@@ -186,9 +199,9 @@ const deleteService = async (req,res) =>{
 }
 
 module.exports = {
-    getServices,
-    getOneService,
-    createService,
-    updateService,
-    deleteService
+    getProducts,
+    getOneProduct,
+    createProduct,
+    updateProduct,
+    deleteProduct
 }

@@ -1,4 +1,4 @@
-const Aid = require('../models/aids');
+const Aid = require('../../models/aids');
 
 /**
  * Método para obtener el listado de consejos

@@ -1,14 +1,21 @@
-const User = require('../models/user');
-const Aids = require('../models/aids');
-const Treatment = require('../models/treatment');
-const Service = require('../models/service');
-const Queries = require('../models/queries');
-const Promotion = require('../models/promotion');
-const Product = require('../models/product');
-const Pet = require('../models/pet');
-const Breed= require('../models/breed');
+const User = require('../../models/user');
+const Aids = require('../../models/aids');
+const Treatment = require('../../models/treatment');
+const Service = require('../../models/service');
+const Queries = require('../../models/queries');
+const Promotion = require('../../models/promotion');
+const Product = require('../../models/product');
+const Pet = require('../../models/pet');
+const Breed= require('../../models/breed');
 
 const searchAll = async (req,res) =>{
+
+    if(req.user.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     try{
 
@@ -61,6 +68,13 @@ const searchAll = async (req,res) =>{
 }
 
 const searchByModel = async (req,res) =>{
+
+    if(req.user.rol === 'USER_ROLE'){
+        return res.status(401).json({
+            ok: false,
+            msg: 'Usuario sin permisos'
+        });
+    }
 
     try{
 

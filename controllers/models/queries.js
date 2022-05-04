@@ -1,5 +1,5 @@
-const Queries = require('../models/queries');
-const Pet = require("../models/pet");
+const Queries = require('../../models/queries');
+const Pet = require("../../models/pet");
 
 /**
  * Método para obtener todas las consultas.

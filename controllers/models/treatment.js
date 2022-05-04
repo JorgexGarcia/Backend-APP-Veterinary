@@ -1,5 +1,5 @@
-const Treatment = require('../models/treatment');
-const Pet = require("../models/pet");
+const Treatment = require('../../models/treatment');
+const Pet = require("../../models/pet");
 
 /**
  * Método para conseguir todos los tratamientos.

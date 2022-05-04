@@ -3,10 +3,10 @@ const {getServices,
     getOneService,
     createService,
     updateService,
-    deleteService} = require('../controllers/service');
+    deleteService} = require('../../controllers/models/service');
 const {check} = require("express-validator");
-const {checkField} = require('../middlewares/check-field')
-const {checkJWT} = require("../middlewares/check-JWT");
+const {checkField} = require('../../middlewares/check-field')
+const {checkJWT} = require("../../middlewares/check-JWT");
 
 const router = Router();
 

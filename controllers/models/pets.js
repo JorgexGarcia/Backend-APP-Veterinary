@@ -1,5 +1,5 @@
-const Pet = require('../models/pet');
-const User = require("../models/user");
+const Pet = require('../../models/pet');
+const User = require("../../models/user");
 
 /**
  * Método para obtener el listado de animales.

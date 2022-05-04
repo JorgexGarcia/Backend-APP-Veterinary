@@ -1,33 +1,34 @@
-const Product = require('../models/product');
+const Breed = require('../../models/breed');
 
 /**
- * Método para obtener el listado de productos.
+ * Método para obtener el listado de razas.
  *  - Si eres Usuario no puedes acceder al método.
  */
-const getProducts = async (req,res) =>{
-
-    if(req.user.rol === 'USER_ROLE'){
-        return res.status(401).json({
-            ok: false,
-            msg: 'Usuario sin permisos'
-        });
-    }
+const getBreeds = async (req,res) =>{
 
     try{
+
+        if(req.user.rol === 'USER_ROLE'){
+            return res.status(401).json({
+                ok: false,
+                msg: 'Usuario sin permisos'
+            });
+        }
 
         const from = (Number(req.query.page) || 0) * 5;
 
         const [data , total] = await Promise.all([
-            Product.find()
+            Breed.find()
                 .skip( from )
-                .limit(5),
+                .limit(5)
+                .populate('deleteUser', 'name lastName img'),
 
-            Product.count()
+            Breed.count()
         ]);
 
         res.status(200).json({
             ok: true,
-            msg: "Listado de productos",
+            msg: "Listado de razas",
             data,
             total
         });
@@ -42,10 +43,10 @@ const getProducts = async (req,res) =>{
 }
 
 /**
- * Método para obtener un producto.
+ * Método para obtener una raza.
  *  - Si eres Usuario no puedes acceder al método.
  */
-const getOneProduct = async (req,res)=>{
+const getOneBreed = async (req,res)=>{
 
     if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
@@ -58,10 +59,12 @@ const getOneProduct = async (req,res)=>{
 
     try{
 
-        await Product.findById(id).then( data => {
+        await Breed.findById(id)
+            .populate('deleteUser', 'name lastName img')
+            .then( data => {
             res.status(200).json({
                 ok: true,
-                msg: "Producto",
+                msg: "Raza",
                 data
             });
         });
@@ -76,28 +79,28 @@ const getOneProduct = async (req,res)=>{
 }
 
 /**
- * Método para crear un producto.
+ * Método para crear una raza.
  *  - Si eres Usuario no puedes acceder al método.
  */
-const createProduct = async (req,res) =>{
-
-    if(req.user.rol === 'USER_ROLE'){
-        return res.status(401).json({
-            ok: false,
-            msg: 'Usuario sin permisos'
-        });
-    }
+const createBreed = async (req,res) =>{
 
     try{
 
-        const product = new Product(req.body);
+        if(req.user.rol === 'USER_ROLE'){
+            return res.status(401).json({
+                ok: false,
+                msg: 'Usuario sin permisos'
+            });
+        }
 
-        await product.save();
+        const breed = new Breed(req.body);
+
+        await breed.save();
 
         res.status(201).json({
             ok: true,
-            msg: 'Producto creada',
-            data: product
+            msg: 'Raza creada',
+            data: breed
         })
 
     }catch (error) {
@@ -110,10 +113,10 @@ const createProduct = async (req,res) =>{
 }
 
 /**
- * Método para actualizar un producto.
+ * Método para actualizar una raza.
  *  - Si eres Usuario no puedes acceder al método.
  */
-const updateProduct = async (req,res) =>{
+const updateBreed = async (req,res) =>{
 
     if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
@@ -129,11 +132,11 @@ const updateProduct = async (req,res) =>{
         //Elementos que no se pueden actualizar
         const {active, deleteDate, deleteUser, deleteReason, ...fields} = req.body;
 
-        await Product.findByIdAndUpdate(id, fields, {new: true})
+        await Breed.findByIdAndUpdate(id, fields, {new: true})
             .then( data => {
                 res.status(201).json({
                     ok: true,
-                    msg: 'Producto actualizado',
+                    msg: 'Raza actualizada',
                     data
                 })
             });
@@ -148,12 +151,12 @@ const updateProduct = async (req,res) =>{
 }
 
 /**
- * Método para eliminar un producto.
+ * Método para borrar una raza.
  *  - Si eres Usuario no puedes acceder al método.
- *  - No eliminamos el producto, lo marcamos como no activo, guardamos la fecha,
- *      el motivo y el usuario que lo desea eliminar.
+ *  - No eliminamos la raza, lo marcamos como no activo, guardamos la fecha,
+ *      el motivo y el usuario que lo desea eliminar
  */
-const deleteProduct = async (req,res) =>{
+const deleteBreed = async (req,res) =>{
 
     if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
@@ -166,12 +169,12 @@ const deleteProduct = async (req,res) =>{
 
     try{
 
-        const data = await Product.findById(id);
+        const data = await Breed.findById(id);
 
         if(!data){
             res.status(404).json({
                 ok: false,
-                msg: "No se encontró el producto"
+                msg: "No se encontró la raza"
             });
         }
 
@@ -180,11 +183,11 @@ const deleteProduct = async (req,res) =>{
         data.deleteReason = req.body.reason || 'Sin motivo';
         data.deleteUser = req.user.id;
 
-        await Product.findByIdAndUpdate(id, data, {new: true})
+        await Breed.findByIdAndUpdate(id, data, {new: true})
             .then( data => {
             res.status(201).json({
                 ok: true,
-                msg: 'Producto eliminado',
+                msg: 'Raza eliminada',
                 data
             });
         });
@@ -199,9 +202,9 @@ const deleteProduct = async (req,res) =>{
 }
 
 module.exports = {
-    getProducts,
-    getOneProduct,
-    createProduct,
-    updateProduct,
-    deleteProduct
+    getBreeds,
+    getOneBreed,
+    createBreed,
+    updateBreed,
+    deleteBreed
 }

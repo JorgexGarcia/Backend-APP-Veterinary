@@ -1,9 +1,9 @@
 const {Router} = require("express");
 const {getAids, getOneAid, createAid, updateAid, deleteAid}
-    = require('../controllers/aids');
+    = require('../../controllers/models/aids');
 const {check} = require("express-validator");
-const {checkField} = require('../middlewares/check-field')
-const {checkJWT} = require("../middlewares/check-JWT");
+const {checkField} = require('../../middlewares/check-field')
+const {checkJWT} = require("../../middlewares/check-JWT");
 
 const router = Router();
 
