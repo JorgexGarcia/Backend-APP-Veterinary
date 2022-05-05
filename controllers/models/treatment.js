@@ -18,7 +18,7 @@ const getTreatments = async (req,res) =>{
                 .populate('idUser', 'name lastName img')
                 .populate('deleteUser', 'name lastName img'),
 
-            Treatment.count()
+            Treatment.countDocuments()
         ]);
 
         res.status(200).json({

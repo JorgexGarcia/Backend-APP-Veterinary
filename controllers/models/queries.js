@@ -28,7 +28,7 @@ const getQueries = async (req,res) =>{
                 .populate('idUser', 'name lastName img')
                 .populate('deleteUser', 'name lastName img'),
 
-            Queries.count()
+            Queries.countDocuments()
         ]);
 
         res.status(200).json({

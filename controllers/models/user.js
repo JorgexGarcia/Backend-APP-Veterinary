@@ -26,7 +26,7 @@ const getUsers = async (req,res) =>{
                     .populate('promotions', 'name img')
                     .populate('deleteUser', 'name lastName img'),
 
-                User.count()
+                User.countDocuments()
             ]);
 
             res.status(200).json({

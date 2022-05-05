@@ -15,7 +15,7 @@ const getServices = async (req,res) =>{
                 .limit(5)
                 .populate('deleteUser', 'name lastName img'),
 
-            Service.count()
+            Service.countDocuments()
         ]);
 
         res.status(200).json({

@@ -17,10 +17,6 @@ const updateImg = async (path, model, id, name, type) => {
 
     let result;
 
-    if(model !== 'queries'){
-
-    }
-
     switch (model){
         case 'user':
             result = await cloudinary.v2.uploader.upload(path, {
@@ -36,7 +32,7 @@ const updateImg = async (path, model, id, name, type) => {
             user.img.imgId = result.public_id;
             user.img.url = result.secure_url;
 
-            await User.findByIdAndUpdate(id, user);
+            await user.save();
             fs.unlinkSync(path);
             break;
 
@@ -54,7 +50,7 @@ const updateImg = async (path, model, id, name, type) => {
             aid.img.imgId = result.public_id;
             aid.img.url = result.secure_url;
 
-            await Aids.findByIdAndUpdate(id, aid);
+            await aid.save();
             fs.unlinkSync(path);
             break;
         case 'promotion':
@@ -86,7 +82,7 @@ const updateImg = async (path, model, id, name, type) => {
             product.img.imgId = result.public_id;
             product.img.url = result.secure_url;
 
-            await Product.findByIdAndUpdate(id, product);
+            await product.save();
             fs.unlinkSync(path);
             break;
         case  'pet':
@@ -102,7 +98,7 @@ const updateImg = async (path, model, id, name, type) => {
             pet.img.imgId = result.public_id;
             pet.img.url = result.secure_url;
 
-            await Pet.findByIdAndUpdate(id, pet);
+            await pet.save();
             fs.unlinkSync(path);
             break;
         case 'queries':
@@ -114,7 +110,9 @@ const updateImg = async (path, model, id, name, type) => {
                     break;
                 case 'video':
                     result = await cloudinary.v2.uploader.upload(path, {
-                        public_id: name
+                        resource_type: "video",
+                        public_id: name,
+                        chunk_size: 6000000,
                     });
                     break;
             }
@@ -126,7 +124,7 @@ const updateImg = async (path, model, id, name, type) => {
                 url: result.secure_url
             });
 
-            await Queries.findByIdAndUpdate(id, queries);
+            await queries.save();
             fs.unlinkSync(path);
             break;
     }

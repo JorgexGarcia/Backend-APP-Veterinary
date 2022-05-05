@@ -23,7 +23,7 @@ const getBreeds = async (req,res) =>{
                 .limit(5)
                 .populate('deleteUser', 'name lastName img'),
 
-            Breed.count()
+            Breed.countDocuments()
         ]);
 
         res.status(200).json({

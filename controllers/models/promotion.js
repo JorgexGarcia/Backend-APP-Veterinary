@@ -15,7 +15,7 @@ const getPromotions = async (req,res) =>{
                 .limit(5)
                 .populate('deleteUser', 'name lastName img'),
 
-            Promotion.count()
+            Promotion.countDocuments()
         ]);
 
         res.status(200).json({

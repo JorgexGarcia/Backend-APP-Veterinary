@@ -29,7 +29,7 @@ const getPets = async (req,res) =>{
                 .populate('idUser', 'name lastName img')
                 .populate('deleteUser', 'name lastName img'),
 
-            Pet.count()
+            Pet.countDocuments()
         ]);
 
         res.status(200).json({

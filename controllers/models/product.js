@@ -22,7 +22,7 @@ const getProducts = async (req,res) =>{
                 .skip( from )
                 .limit(5),
 
-            Product.count()
+            Product.countDocuments()
         ]);
 
         res.status(200).json({

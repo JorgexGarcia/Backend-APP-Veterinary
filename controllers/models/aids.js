@@ -15,7 +15,7 @@ const getAids = async (req,res) =>{
                 .limit(5)
                 .populate('idUser', 'name lastName img'),
 
-            Aid.count()
+            Aid.countDocuments()
         ]);
 
         res.status(200).json({
