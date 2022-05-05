@@ -33,7 +33,9 @@ const updateImg = async (path, model, id, name, type) => {
             user.img.url = result.secure_url;
 
             await user.save();
+
             fs.unlinkSync(path);
+
             break;
 
         case 'aids':
