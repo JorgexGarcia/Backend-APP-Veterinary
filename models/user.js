@@ -20,7 +20,8 @@ const UserSchema = Schema ({
         required: true
     },
     img: {
-        type: String
+        imgId: {type: String},
+        url: {type: String}
     },
     rol: {
         type: String,
@@ -87,7 +88,6 @@ UserSchema.method('toJSON', function() {
     const {__v, _id, password, ...object} = this.toObject();
     object.id = _id;
     return object;
-})
-
+});
 
 module.exports = model('User', UserSchema);

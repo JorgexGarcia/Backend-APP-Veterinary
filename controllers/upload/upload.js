@@ -7,6 +7,7 @@ cloudinary.config({
 });
 const updateImg = require('../../helpers/updateImg');
 const fs = require('fs');
+const User = require('../../models/user.js');
 
 const fileUpload = async (req,res) =>{
 
@@ -55,7 +56,8 @@ const fileUpload = async (req,res) =>{
         }
 
         //Generar nombre y path
-        const nameFile = `${uuid()}.${ext}`;
+        const name = uuid();
+        const nameFile = `${name}.${ext}`;
         const path = `./files/${nameFile}`;
 
         //Mover img
@@ -67,13 +69,22 @@ const fileUpload = async (req,res) =>{
                 });
             }
 
-           const result = await cloudinary.v2.uploader.upload(path, {
-               use_filename
-           }).then(() => {
+            const result = await cloudinary.v2.uploader.upload(path, {
+               public_id: name
+            });
 
-           })
+            const user = await User.findById(id);
 
-            updateImg(model, id, path, nameFile);
+            if(user.img.url){
+                await cloudinary.v2.uploader.destroy(user.img.imgId);
+            }
+
+            user.img.imgId = result.public_id;
+            user.img.url = result.secure_url;
+
+            await User.findByIdAndUpdate(id, user);
+
+            fs.unlinkSync(path);
 
             res.status(200).json({
                 ok: true,
