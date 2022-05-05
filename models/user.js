@@ -27,10 +27,6 @@ const UserSchema = Schema ({
         type: String,
         default: 'USER_ROLE'
     },
-    auth: {
-        type: String,
-        default: 'EMAIL'
-    },
     listPets: [{
         type: Schema.Types.ObjectId,
         ref: 'Pet'
