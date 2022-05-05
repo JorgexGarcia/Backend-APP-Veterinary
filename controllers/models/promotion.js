@@ -78,6 +78,13 @@ const createPromotion = async (req,res) =>{
 
         const promotion = new Promotion (req.body);
 
+        if(!req.body.img){
+            promotion.img = {
+                imgId: 'Null',
+                url: 'https://res.cloudinary.com/app-veterinary/image/upload/v1651750342/e10c4a2f-3196-4ab1-a99b-5e37c7200112.jpg'
+            }
+        }
+
         await promotion.save();
 
         res.status(201).json({

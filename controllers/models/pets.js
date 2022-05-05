@@ -112,6 +112,13 @@ const createPet = async (req,res) =>{
 
         const pet = new Pet (req.body);
 
+        if(!req.body.img){
+            pet.img = {
+                imgId: 'Null',
+                url: 'https://res.cloudinary.com/app-veterinary/image/upload/v1651750342/e10c4a2f-3196-4ab1-a99b-5e37c7200112.jpg'
+            }
+        }
+
         const newData = `${pet.name}${pet.id_user}${Date.now()}`;
 
         if(chip){

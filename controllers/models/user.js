@@ -103,12 +103,19 @@ const createUser = async (req,res) =>{
         });
     }
 
-    const {email, dni, password} = req.body;
+    const {email, dni, password, img} = req.body;
 
     const user = new User (req.body);
     //Encriptar contraseña
     const salt = bcrypt.genSaltSync();
     user.password = bcrypt.hashSync(password, salt);
+
+    if(!img){
+        user.img = {
+            imgId: 'Null',
+            url: 'https://res.cloudinary.com/app-veterinary/image/upload/v1651750377/91f0d27a-c1a6-4a39-923f-79b266bad604.jpg'
+        }
+    }
 
     try{
 
