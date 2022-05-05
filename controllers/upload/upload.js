@@ -1,13 +1,66 @@
 const { v4: uuid } = require('uuid');
 const cloudinary = require('cloudinary');
 cloudinary.config({
-   cloud_name: 'app-veterinary',
-   api_key: '887253888763596',
-   api_secret:'EfqZ_HpTIAtfy6a1ao-vpRRTU4Y'
+   cloud_name: process.env.CLOUD_NAME,
+   api_key: process.env.API_KEY,
+   api_secret:process.env.API_SECRET
 });
-const updateImg = require('../../helpers/updateImg');
 const fs = require('fs');
 const User = require('../../models/user.js');
+const Aids = require('../../models/aids.js');
+const Promotion = require('../../models/promotion');
+
+const updateImg = async (path, model, id, name) => {
+    const result = await cloudinary.v2.uploader.upload(path, {
+        public_id: name
+    });
+
+    switch (model){
+        //'queries', 'product', 'pet'
+        case 'user':
+            const user = await User.findById(id);
+
+            if(user.img.url){
+                await cloudinary.v2.uploader.destroy(user.img.imgId);
+            }
+
+            user.img.imgId = result.public_id;
+            user.img.url = result.secure_url;
+
+            await User.findByIdAndUpdate(id, user);
+            fs.unlinkSync(path);
+            break;
+
+        case 'aids':
+            const aid = await Aids.findById(id);
+
+            if(aid.img.url){
+                await cloudinary.v2.uploader.destroy(aid.img.imgId);
+            }
+
+            aid.img.imgId = result.public_id;
+            aid.img.url = result.secure_url;
+
+            await Aids.findByIdAndUpdate(id, aid);
+            fs.unlinkSync(path);
+            break;
+        case 'promotion':
+            const promotion = await Promotion.findById(id);
+
+            if(promotion.img.url){
+                await cloudinary.v2.uploader.destroy(promotion.img.imgId);
+            }
+
+            promotion.img.imgId = result.public_id;
+            promotion.img.url = result.secure_url;
+
+            await Promotion.findByIdAndUpdate(id, promotion);
+            fs.unlinkSync(path);
+            break;
+    }
+
+
+}
 
 const fileUpload = async (req,res) =>{
 
@@ -69,22 +122,7 @@ const fileUpload = async (req,res) =>{
                 });
             }
 
-            const result = await cloudinary.v2.uploader.upload(path, {
-               public_id: name
-            });
-
-            const user = await User.findById(id);
-
-            if(user.img.url){
-                await cloudinary.v2.uploader.destroy(user.img.imgId);
-            }
-
-            user.img.imgId = result.public_id;
-            user.img.url = result.secure_url;
-
-            await User.findByIdAndUpdate(id, user);
-
-            fs.unlinkSync(path);
+            updateImg(path, model, id, name);
 
             res.status(200).json({
                 ok: true,

@@ -11,7 +11,8 @@ const AidSchema = Schema ({
         required: true
     },
     img: {
-        type: String
+        imgId: {type: String},
+        url: {type: String}
     },
     content: {
         type: String,

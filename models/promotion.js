@@ -11,7 +11,8 @@ const PromotionSchema = Schema ({
         required: true
     },
     img: {
-        type: String
+        imgId: {type: String},
+        url: {type: String}
     },
     startDate: {
         type: Date,
