@@ -7,7 +7,8 @@ const ProductSchema = Schema ({
         required: true
     },
     img: {
-        type: String
+        imgId: {type: String},
+        url: {type: String}
     },
     description: {
         type: String,

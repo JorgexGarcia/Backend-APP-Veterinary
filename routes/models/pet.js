@@ -36,7 +36,7 @@ router.post('/',
         check('sex', 'Tienes que indicar el sexo del animal').not().isEmpty(),
         check('sterilized', 'Tienes que indicar si esta esterilizado el animal').not().isEmpty(),
         check('color', 'Tienes que indicar el color del animal').not().isEmpty(),
-        check('race', 'Tienes que indicar la raza del animal').not()
+        check('breed', 'Tienes que indicar la raza del animal').not()
             .isEmpty()
             .isMongoId(),
         check('type', 'Tienes que indicar el tipo del animal').not().isEmpty(),

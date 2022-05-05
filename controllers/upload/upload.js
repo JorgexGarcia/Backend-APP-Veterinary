@@ -9,15 +9,24 @@ const fs = require('fs');
 const User = require('../../models/user.js');
 const Aids = require('../../models/aids.js');
 const Promotion = require('../../models/promotion');
+const Product = require('../../models/product');
+const Pet = require('../../models/pet');
+const Queries = require('../../models/queries');
 
-const updateImg = async (path, model, id, name) => {
-    const result = await cloudinary.v2.uploader.upload(path, {
-        public_id: name
-    });
+const updateImg = async (path, model, id, name, type) => {
+
+    let result;
+
+    if(model !== 'queries'){
+
+    }
 
     switch (model){
-        //'queries', 'product', 'pet'
         case 'user':
+            result = await cloudinary.v2.uploader.upload(path, {
+                public_id: name
+            });
+
             const user = await User.findById(id);
 
             if(user.img.url){
@@ -32,6 +41,10 @@ const updateImg = async (path, model, id, name) => {
             break;
 
         case 'aids':
+            result = await cloudinary.v2.uploader.upload(path, {
+                public_id: name
+            });
+
             const aid = await Aids.findById(id);
 
             if(aid.img.url){
@@ -45,6 +58,9 @@ const updateImg = async (path, model, id, name) => {
             fs.unlinkSync(path);
             break;
         case 'promotion':
+            result = await cloudinary.v2.uploader.upload(path, {
+                public_id: name
+            });
             const promotion = await Promotion.findById(id);
 
             if(promotion.img.url){
@@ -57,9 +73,91 @@ const updateImg = async (path, model, id, name) => {
             await Promotion.findByIdAndUpdate(id, promotion);
             fs.unlinkSync(path);
             break;
+        case 'product':
+            result = await cloudinary.v2.uploader.upload(path, {
+                public_id: name
+            });
+            const product = await Product.findById(id);
+
+            if(product.img.url){
+                await cloudinary.v2.uploader.destroy(product.img.imgId);
+            }
+
+            product.img.imgId = result.public_id;
+            product.img.url = result.secure_url;
+
+            await Product.findByIdAndUpdate(id, product);
+            fs.unlinkSync(path);
+            break;
+        case  'pet':
+            result = await cloudinary.v2.uploader.upload(path, {
+                public_id: name
+            });
+            const pet = await Pet.findById(id);
+
+            if(pet.img.url){
+                await cloudinary.v2.uploader.destroy(pet.img.imgId);
+            }
+
+            pet.img.imgId = result.public_id;
+            pet.img.url = result.secure_url;
+
+            await Pet.findByIdAndUpdate(id, pet);
+            fs.unlinkSync(path);
+            break;
+        case 'queries':
+            switch (type){
+                case 'img': case 'pdf':
+                    result = await cloudinary.v2.uploader.upload(path, {
+                        public_id: name
+                    });
+                    break;
+                case 'video':
+                    result = await cloudinary.v2.uploader.upload(path, {
+                        public_id: name
+                    });
+                    break;
+            }
+            const queries = await Queries.findById(id);
+
+            queries.reports.push({
+                typeReport: type,
+                reportId: result.public_id,
+                url: result.secure_url
+            });
+
+            await Queries.findByIdAndUpdate(id, queries);
+            fs.unlinkSync(path);
+            break;
     }
+}
 
-
+const checkExt = (ext, model, type) => {
+    const extValid = ['png', 'jpg', 'svg', 'gif', 'jpeg'];
+    switch (model){
+        case 'queries':
+            const extValidVideo = ['mp4', 'avi', 'mkv'];
+            if(!extValid.includes(ext)){
+                if(!extValidVideo.includes(ext)){
+                    if(ext !== 'pdf'){
+                        return {type: type,ok: false};
+                    }else{
+                        type = 'pdf';
+                    }
+                }else{
+                    type = 'video';
+                }
+            }else{
+                type = 'img';
+            }
+            break;
+        default:
+            if(!extValid.includes(ext)){
+                return {type: type,ok: false};
+            }
+            break;
+    }
+    return {type: type,ok: true};
 }
 
 const fileUpload = async (req,res) =>{
@@ -98,15 +196,17 @@ const fileUpload = async (req,res) =>{
         const file = req.files.file;
         const parts = file.name.split('.');
         const ext = parts[parts.length - 1];
+        let type = 'img';
 
         //Comprobamos si es una ext válida
-        const extValid = ['png', 'jpg', 'jpeg', 'gif'];
-        if(!extValid.includes(ext)){
+        const end = checkExt(ext, model, type);
+        if(!end.ok){
             return res.status(401).json({
                 ok: false,
                 msg: 'Extensión no permitida'
             });
         }
+        type = end.type;
 
         //Generar nombre y path
         const name = uuid();
@@ -122,7 +222,7 @@ const fileUpload = async (req,res) =>{
                 });
             }
 
-            updateImg(path, model, id, name);
+            updateImg(path, model, id, name, type);
 
             res.status(200).json({
                 ok: true,

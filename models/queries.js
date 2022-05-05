@@ -22,6 +22,7 @@ const QueriesSchema = Schema ({
     },
     reports: [{
         typeReport: {type: String},
+        reportId: {type: String},
         url: {type: String, required: true}
     }],
     service: {

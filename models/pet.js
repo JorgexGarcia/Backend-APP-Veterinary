@@ -7,7 +7,8 @@ const PetSchema = Schema ({
         required: true
     },
     img: {
-        type: String
+        imgId: {type: String},
+        url: {type: String}
     },
     birthDate: {
         type: Date,
@@ -44,7 +45,7 @@ const PetSchema = Schema ({
     weight: [{
         type: Number
     }],
-    race: {
+    breed: {
         required: true,
         type: Schema.Types.ObjectId,
         ref: 'Breed'
