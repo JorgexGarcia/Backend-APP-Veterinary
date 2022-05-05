@@ -5,6 +5,8 @@ cloudinary.config({
    api_key: '887253888763596',
    api_secret:'EfqZ_HpTIAtfy6a1ao-vpRRTU4Y'
 });
+const updateImg = require('../../helpers/updateImg');
+const fs = require('fs');
 
 const fileUpload = async (req,res) =>{
 
@@ -32,7 +34,7 @@ const fileUpload = async (req,res) =>{
         }
 
         //Comprobamos si hay un archivo en la petición
-        if( !req.file || Object.keys(req.file).length === 0){
+        if( !req.files || Object.keys(req.files).length === 0){
             return res.status(401).json({
                 ok: false,
                 msg: 'No hay ningún archivo'
@@ -65,12 +67,17 @@ const fileUpload = async (req,res) =>{
                 });
             }
 
-            const result = await cloudinary.v2.uploader.upload(path);
+           const result = await cloudinary.v2.uploader.upload(path, {
+               use_filename
+           }).then(() => {
+
+           })
+
+            updateImg(model, id, path, nameFile);
 
             res.status(200).json({
                 ok: true,
-                msg: 'Archivo subido',
-                data: result.public_id
+                msg: 'Archivo subido'
             });
         })
 
