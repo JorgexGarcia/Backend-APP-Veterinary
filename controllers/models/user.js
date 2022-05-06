@@ -219,7 +219,7 @@ const updateUser = async (req,res) =>{
         }
 
         //Elementos que no se pueden actualizar
-        const {password, auth, email, dni, active,
+        const {email, dni, active,
             deleteDate, deleteUser, deleteReason, ...fields} = req.body;
 
         if(userDB.email !== email){
