@@ -11,6 +11,10 @@ const QueriesSchema = Schema ({
         type: Schema.Types.ObjectId,
         ref: 'Pet'
     },
+    position: {
+        type: Number,
+        required: true
+    },
     idUser:{
         required:true,
         type: Schema.Types.ObjectId,
