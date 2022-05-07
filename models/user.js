@@ -40,10 +40,10 @@ const UserSchema = Schema ({
         required: true,
         unique: true
     },
-    phone: [{
+    phone: {
         type: String,
         required: true
-    }],
+    },
     province: {
         type: String,
         required: true
