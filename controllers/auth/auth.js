@@ -29,9 +29,12 @@ const login = async (req,res) =>{
         //Generar token
         const token = await generateJWT(userDB.id);
 
+        const go =  (userDB.rol !== 'USER_ROLE');
+
         return res.status(200).json({
             ok: true,
-            token
+            token,
+            go
         });
 
 
@@ -51,7 +54,8 @@ const renewToken = async (req, res) => {
 
     return res.status(200).json({
         ok: true,
-        token
+        token,
+        user: req.user
     });
 }
 

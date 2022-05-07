@@ -16,7 +16,7 @@ router.post('/',
     login
 );
 
-router.post('/renew',
+router.get('/renew',
     [
         checkJWT
     ],
