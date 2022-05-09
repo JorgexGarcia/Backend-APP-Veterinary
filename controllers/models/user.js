@@ -246,6 +246,12 @@ const updateUser = async (req,res) =>{
         }
         fields.dni = dni;
 
+        //Encriptar contraseña
+        if(fields.password){
+            const salt = bcrypt.genSaltSync();
+            fields.password = bcrypt.hashSync(fields.password, salt);
+        }
+
         await User.findByIdAndUpdate(id, fields, {new: true}).then( data => {
            res.status(201).json({
                ok: true,
@@ -255,6 +261,7 @@ const updateUser = async (req,res) =>{
         });
 
     }catch (error) {
+        console.log(error)
         res.status(500).json({
             ok: false,
             msg: "Error inesperado...., llame a su administrador"
