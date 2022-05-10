@@ -55,7 +55,7 @@ const renewToken = async (req, res) => {
     return res.status(200).json({
         ok: true,
         token,
-        user: req.user,
+        data: req.user,
         password: req.user.password
     });
 }

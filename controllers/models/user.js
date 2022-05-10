@@ -252,11 +252,12 @@ const updateUser = async (req,res) =>{
             fields.password = bcrypt.hashSync(fields.password, salt);
         }
 
-        await User.findByIdAndUpdate(id, fields, {new: true}).then( data => {
+        await User.findByIdAndUpdate(id, fields, {new: true}).then(data => {
            res.status(201).json({
                ok: true,
                msg: 'Usuario actualizado',
-               data
+               data,
+               password: data.password
            })
         });
 
