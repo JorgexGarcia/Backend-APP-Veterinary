@@ -9,6 +9,8 @@ const getUsers = async (req,res) =>{
 
     try{
 
+        const active = req.params.active || true;
+
         if(req.user.rol === 'USER_ROLE'){
             return res.status(401).json({
                 ok: false,
@@ -19,7 +21,7 @@ const getUsers = async (req,res) =>{
             const from = (Number(req.query.page) || 0) * 5;
 
             const [data , total] = await Promise.all([
-                User.find()
+                User.find({active: active})
                     .skip( from )
                     .limit(5)
                     .populate('listPets', 'name img' )

@@ -8,7 +8,7 @@ const {checkJWT} = require("../../middlewares/check-JWT");
 
 const router = Router();
 
-router.get('/',
+router.get('/:active',
     [
         checkJWT
     ],
