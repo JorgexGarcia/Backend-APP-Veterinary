@@ -12,6 +12,7 @@ const checkField = (req, res, next) => {
         });
     }
 
+    console.log('2');
     next();
 
 }

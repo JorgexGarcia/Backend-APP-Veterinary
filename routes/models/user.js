@@ -8,33 +8,24 @@ const {checkJWT} = require("../../middlewares/check-JWT");
 
 const router = Router();
 
-router.get('/:active',
-    [
-        checkJWT
-    ],
-    getUsers);
+router.get('/all/:active', checkJWT, getUsers);
 
-router.get('/:id',
-    [
-        checkJWT
-    ],
-    getOneUser
-);
+router.get('/one/:id', checkJWT, getOneUser);
 
 router.post(
     '/',
     [
         checkJWT,
-        check('name','El nombre es obligatorio').not().isEmpty(),
-        check('lastName','Los apellidos son obligatorios').not().isEmpty(),
-        check('email','El email no es valido').not().isEmpty().isEmail(),
-        check('password','El password es obligatorio').not().isEmpty(),
-        check('birthDate','La fecha de nacimiento es obligatorio').not().isEmpty(),
-        check('dni','El DNI es obligatorio').not().isEmpty(),
-        check('phone','El teléfono es obligatorio').not().isEmpty(),
-        check('province','La provincia es obligatorio').not().isEmpty(),
-        check('city','La ciudad es obligatorio').not().isEmpty(),
-        check('address','La dirección es obligatorio').not().isEmpty(),
+            check('name','El nombre es obligatorio').not().isEmpty(),
+            check('lastName','Los apellidos son obligatorios').not().isEmpty(),
+            check('email','El email no es valido').not().isEmpty().isEmail(),
+            check('password','El password es obligatorio').not().isEmpty(),
+            check('birthDate','La fecha de nacimiento es obligatorio').not().isEmpty(),
+            check('dni','El DNI es obligatorio').not().isEmpty(),
+            check('phone','El teléfono es obligatorio').not().isEmpty(),
+            check('province','La provincia es obligatorio').not().isEmpty(),
+            check('city','La ciudad es obligatorio').not().isEmpty(),
+            check('address','La dirección es obligatorio').not().isEmpty(),
         checkField
     ],
     createUser
@@ -58,11 +49,7 @@ router.put(
     updateUser
 );
 
-router.delete('/:id',
-    [
-        checkJWT
-    ],
-    deleteUser
+router.delete('/:id', checkJWT, deleteUser
 );
 
 module.exports = router;

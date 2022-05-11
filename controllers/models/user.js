@@ -28,7 +28,7 @@ const getUsers = async (req,res) =>{
                     .populate('promotions', 'name img')
                     .populate('deleteUser', 'name lastName img'),
 
-                User.countDocuments()
+                User.countDocuments({active: active})
             ]);
 
             res.status(200).json({
@@ -80,7 +80,7 @@ const getOneUser = async (req,res)=>{
     }catch (error) {
         res.status(500).json({
             ok: false,
-            msg: "Error inesperado...., llame a su administrador"
+            msg: "Error inesperado..., llame a su administrador"
         });
     }
 
@@ -223,6 +223,9 @@ const updateUser = async (req,res) =>{
         //Elementos que no se pueden actualizar
         const {email, dni, active,
             deleteDate, deleteUser, deleteReason, ...fields} = req.body;
+        if(req.user.rol !== 'GERENTE_ROLE'){
+            const {rol, ...fields} = fields;
+        }
 
         if(userDB.email !== email){
             const checkEmail = await User.findOne({email});
@@ -264,7 +267,6 @@ const updateUser = async (req,res) =>{
         });
 
     }catch (error) {
-        console.log(error)
         res.status(500).json({
             ok: false,
             msg: "Error inesperado...., llame a su administrador"
@@ -324,8 +326,8 @@ const deleteUser = async (req,res) =>{
 
 module.exports = {
     getUsers,
-    createUser,
     getOneUser,
+    createUser,
     deleteUser,
     updateUser
 }
