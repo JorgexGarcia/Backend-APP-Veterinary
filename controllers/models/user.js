@@ -115,7 +115,7 @@ const createUser = async (req,res) =>{
     if(!img){
         user.img = {
             imgId: 'Null',
-            url: 'https://res.cloudinary.com/app-veterinary/image/upload/v1651750377/91f0d27a-c1a6-4a39-923f-79b266bad604.jpg'
+            url: 'https://res.cloudinary.com/app-veterinary/image/upload/v1651750377/no-img-user.jpg'
         }
     }
 

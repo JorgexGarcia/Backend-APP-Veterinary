@@ -95,7 +95,7 @@ const createProduct = async (req,res) =>{
         if(!req.body.img){
             product.img = {
                 imgId: 'Null',
-                url: 'https://res.cloudinary.com/app-veterinary/image/upload/v1651750342/e10c4a2f-3196-4ab1-a99b-5e37c7200112.jpg'
+                url: 'https://res.cloudinary.com/app-veterinary/image/upload/v1651750342/no-img.jpg'
             }
         }
 
