@@ -7,6 +7,7 @@ const checkJWT = async (req, res, next) => {
     const token = req.header('token');
 
     if( !token ){
+        console.log(3)
         return res.status(401).json({
             ok: false,
             msg: 'No hay token en la petición'
@@ -20,6 +21,7 @@ const checkJWT = async (req, res, next) => {
         const user = await User.findById(id);
 
         if(!user || user.active === false){
+            console.log(2)
             return res.status(401).json({
                 ok: false,
                 msg: "Token no válido"
@@ -30,6 +32,7 @@ const checkJWT = async (req, res, next) => {
         }
 
     }catch (error){
+        console.log(error)
         return res.status(401).json({
             ok: false,
             msg: 'Token no es correcto'

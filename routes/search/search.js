@@ -5,7 +5,7 @@ const {checkJWT} = require("../../middlewares/check-JWT");
 
 const router = Router();
 
-router.get('/:part',
+router.get('/all/:part',
     [
         checkJWT
     ],
@@ -16,11 +16,5 @@ router.get('/model/:model/:part',
         checkJWT
     ],
     searchByModel);
-
-router.get('/',
-    [
-        checkJWT
-    ],
-    searchAll);
 
 module.exports = router;

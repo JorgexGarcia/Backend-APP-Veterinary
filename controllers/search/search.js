@@ -30,10 +30,11 @@ const searchAll = async (req,res) =>{
         }
 
         const [user, aids, queries, treatment,
-            service, promotion, product, pet, breed] = await Promise.all([
+            service, promotion, products, pets, breed] = await Promise.all([
             User.find({name: regx}, 'name img lastName'),
             Aids.find({description: regx}, 'name img'),
-            Queries.find({description: regx}, 'type'),
+            Queries.find({description: regx}, 'type idPet')
+                .populate('idPet', 'name img'),
             Treatment.find({name: regx}, 'name'),
             Service.find({name: regx}, 'name'),
             Promotion.find({name: regx}, 'name img'),
@@ -51,8 +52,8 @@ const searchAll = async (req,res) =>{
                 service,
                 queries,
                 promotion,
-                product,
-                pet,
+                products,
+                pets,
                 breed
             }
         });

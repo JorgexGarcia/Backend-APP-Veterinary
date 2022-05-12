@@ -162,8 +162,11 @@ const checkExt = (ext, model, type) => {
 
 const fileUpload = async (req,res) =>{
 
+    console.log(1)
+
     //Comprobamos si tiene permisos
     if(req.user.rol === 'USER_ROLE'){
+        console.log('c')
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -179,6 +182,7 @@ const fileUpload = async (req,res) =>{
         const modelsValids = ['user', 'aids', 'queries',
             'promotion', 'product', 'pet'];
         if(!modelsValids.includes(model)){
+            console.log('b')
             return res.status(401).json({
                 ok: false,
                 msg: 'Modelo no existe'
@@ -187,6 +191,7 @@ const fileUpload = async (req,res) =>{
 
         //Comprobamos si hay un archivo en la petición
         if( !req.files || Object.keys(req.files).length === 0){
+            console.log('a')
             return res.status(401).json({
                 ok: false,
                 msg: 'No hay ningún archivo'
@@ -201,6 +206,7 @@ const fileUpload = async (req,res) =>{
         //Comprobamos si es una ext válida
         const end = checkExt(ext, model, type);
         if(!end.ok){
+            console.log('d')
             return res.status(401).json({
                 ok: false,
                 msg: 'Extensión no permitida'
@@ -225,6 +231,7 @@ const fileUpload = async (req,res) =>{
 
             updateImg(path, model, id, name, type);
 
+            console.log('aa')
             res.status(200).json({
                 ok: true,
                 msg: 'Archivo subido'
