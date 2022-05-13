@@ -8,6 +8,8 @@ const getBreeds = async (req,res) =>{
 
     try{
 
+        const active = req.params.active || true;
+
         if(req.user.rol === 'USER_ROLE'){
             return res.status(401).json({
                 ok: false,
@@ -18,12 +20,12 @@ const getBreeds = async (req,res) =>{
         const from = (Number(req.query.page) || 0) * 5;
 
         const [data , total] = await Promise.all([
-            Breed.find()
+            Breed.find({active: active})
                 .skip( from )
                 .limit(5)
                 .populate('deleteUser', 'name lastName img'),
 
-            Breed.countDocuments()
+            Breed.countDocuments({active: active})
         ]);
 
         res.status(200).json({
@@ -130,7 +132,7 @@ const updateBreed = async (req,res) =>{
     try{
 
         //Elementos que no se pueden actualizar
-        const {active, deleteDate, deleteUser, deleteReason, ...fields} = req.body;
+        const {deleteDate, deleteUser, deleteReason, ...fields} = req.body;
 
         await Breed.findByIdAndUpdate(id, fields, {new: true})
             .then( data => {

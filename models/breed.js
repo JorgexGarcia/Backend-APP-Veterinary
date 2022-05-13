@@ -6,16 +6,16 @@ const BreedSchema = Schema ({
         type: String,
         required: true
     },
-    problems: [{
+    problems: {
         type: String
-    }],
+    },
     type: {
         type: String,
         required: true
     },
-    features: [{
+    features: {
         type: String
-    }],
+    },
     active: {
         type: Boolean,
         default: true,

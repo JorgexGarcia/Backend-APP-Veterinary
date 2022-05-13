@@ -10,19 +10,9 @@ const {checkJWT} = require("../../middlewares/check-JWT");
 
 const router = Router();
 
-router.get('/',
-    [
-        checkJWT
-    ],
-    getBreeds
-);
+router.get('/all/:active', checkJWT, getBreeds);
 
-router.get('/:id',
-    [
-        checkJWT
-    ],
-    getOneBreed
-);
+router.get('/one/:id', checkJWT, getOneBreed);
 
 router.post('/',
     [
@@ -43,11 +33,6 @@ router.put('/:id',
     updateBreed
 );
 
-router.delete('/:id',
-    [
-        checkJWT
-    ],
-    deleteBreed
-);
+router.put('/delete/:id', checkJWT, deleteBreed);
 
 module.exports = router;

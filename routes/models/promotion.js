@@ -7,19 +7,9 @@ const {checkJWT} = require("../../middlewares/check-JWT");
 
 const router = Router();
 
-router.get('/',
-    [
-        checkJWT
-    ],
-    getPromotions
-);
+router.get('/all/:active', checkJWT, getPromotions);
 
-router.get('/:id',
-    [
-        checkJWT
-    ],
-    getOnePromotion
-);
+router.get('/one/:id', checkJWT, getOnePromotion);
 
 router.post('/',
     [
@@ -45,11 +35,6 @@ router.put('/:id',
     updatePromotion
 );
 
-router.delete('/:id',
-    [
-        checkJWT
-    ],
-    deletePromotion
-);
+router.put('/delete/:id', checkJWT, deletePromotion);
 
 module.exports = router;

@@ -27,6 +27,7 @@ const checkJWT = async (req, res, next) => {
                 msg: "Token no válido"
             });
         }else{
+            console.log('Token Ok')
             req.user = user;
             next();
         }

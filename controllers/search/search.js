@@ -93,11 +93,11 @@ const searchByModel = async (req,res) =>{
                     .populate('deleteUser', 'name lastName img');
                 break;
             case 'aids':
-                data = await Aids.find({description: regx}, 'name img')
+                data = await Aids.find({description: regx})
                     .populate('idUser', 'name lastName img');
                 break;
             case 'queries':
-                data = await Queries.find({description: regx}, 'type')
+                data = await Queries.find({description: regx})
                     .populate('idPet', 'name img')
                     .populate('service', 'name')
                     .populate('treatment', 'name')
@@ -105,24 +105,24 @@ const searchByModel = async (req,res) =>{
                     .populate('deleteUser', 'name lastName img');
                 break;
             case 'treatment':
-                data = await Treatment.find({name: regx}, 'name')
+                data = await Treatment.find({name: regx})
                     .populate('idPet', 'name img')
                     .populate('idUser', 'name lastName img')
                     .populate('deleteUser', 'name lastName img');
                 break;
             case 'service':
-                data = await Service.find({name: regx}, 'name')
+                data = await Service.find({name: regx})
                     .populate('deleteUser', 'name lastName img');
                 break;
             case 'promotion':
-                data = await Promotion.find({name: regx}, 'name img')
+                data = await Promotion.find({name: regx})
                     .populate('deleteUser', 'name lastName img');
                 break;
             case 'product':
-                data = await Product.find({name: regx}, 'name img');
+                data = await Product.find({name: regx});
                 break;
             case 'pet':
-                data = await Pet.find({name: regx}, 'name img')
+                data = await Pet.find({name: regx})
                     .populate('breed', 'name')
                     .populate('treatment', 'name')
                     .populate('nextQueries', 'type')
@@ -131,7 +131,7 @@ const searchByModel = async (req,res) =>{
                     .populate('deleteUser', 'name lastName img');
                 break;
             case 'breed':
-                data = await Breed.find({name: regx}, 'name')
+                data = await Breed.find({name: regx})
                     .populate('deleteUser', 'name lastName img');
                 break;
 

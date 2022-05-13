@@ -49,7 +49,7 @@ router.put(
     updateUser
 );
 
-router.delete('/:id', checkJWT, deleteUser
+router.put('/delete/:id', checkJWT, deleteUser
 );
 
 module.exports = router;

@@ -6,16 +6,17 @@ const Promotion = require('../../models/promotion');
 const getPromotions = async (req,res) =>{
 
     try{
+        const active = req.params.active || true;
 
         const from = (Number(req.query.page) || 0) * 5;
 
         const [data , total] = await Promise.all([
-            Promotion.find()
+            Promotion.find({active: active})
                 .skip( from )
                 .limit(5)
                 .populate('deleteUser', 'name lastName img'),
 
-            Promotion.countDocuments()
+            Promotion.countDocuments({active: active})
         ]);
 
         res.status(200).json({
@@ -119,7 +120,7 @@ const updatePromotion = async (req,res) =>{
 
     try{
 
-        const {active, deleteDate, deleteUser, deleteReason, ...fields} = req.body;
+        const {deleteDate, deleteUser, deleteReason, ...fields} = req.body;
 
         await Promotion.findByIdAndUpdate(id, fields, {new: true})
             .then( data => {
