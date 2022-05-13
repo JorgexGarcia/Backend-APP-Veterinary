@@ -1,5 +1,5 @@
 const {Router} = require("express");
-const {getPromotions, getOnePromotion, createPromotion, updatePromotion, deletePromotion}
+const {getPromotions, getOnePromotion, createPromotion, updatePromotion, deletePromotion, getAllPromotions}
     = require('../../controllers/models/promotion');
 const {check} = require('express-validator');
 const {checkField} = require('../../middlewares/check-field')
@@ -8,6 +8,8 @@ const {checkJWT} = require("../../middlewares/check-JWT");
 const router = Router();
 
 router.get('/all/:active', checkJWT, getPromotions);
+
+router.get('/pages/all', checkJWT, getAllPromotions);
 
 router.get('/one/:id', checkJWT, getOnePromotion);
 

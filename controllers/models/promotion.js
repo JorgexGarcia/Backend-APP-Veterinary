@@ -35,6 +35,37 @@ const getPromotions = async (req,res) =>{
 
 }
 
+const getAllPromotions = async (req,res) =>{
+
+    try{
+
+        await Promotion.find()
+            .populate('deleteUser', 'name lastName img').then(
+                data => {
+                    res.status(200).json({
+                        ok: true,
+                        msg: "Listado de promociones",
+                        data
+                    })
+                }
+            ).catch(err => {
+                res.status(400).json({
+                    ok: true,
+                    msg: err
+                })
+            })
+
+
+
+    }catch (error) {
+        res.status(500).json({
+            ok: false,
+            msg: "Error inesperado..., llame a su administrador"
+        });
+    }
+
+}
+
 /**
  * Método para obtener una promoción.
  */
@@ -196,5 +227,6 @@ module.exports = {
     getOnePromotion,
     createPromotion,
     updatePromotion,
-    deletePromotion
+    deletePromotion,
+    getAllPromotions
 }
