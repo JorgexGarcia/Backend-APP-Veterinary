@@ -15,14 +15,17 @@ const getProducts = async (req,res) =>{
 
     try{
 
+        const active = req.params.active || true;
+
         const from = (Number(req.query.page) || 0) * 5;
 
         const [data , total] = await Promise.all([
-            Product.find()
+            Product.find({active: active})
+                .populate('deleteUser', 'name lastName img')
                 .skip( from )
                 .limit(5),
 
-            Product.countDocuments()
+            Product.countDocuments({active: active})
         ]);
 
         res.status(200).json({
@@ -58,7 +61,9 @@ const getOneProduct = async (req,res)=>{
 
     try{
 
-        await Product.findById(id).then( data => {
+        await Product.findById(id)
+            .populate('deleteUser', 'name lastName img')
+            .then( data => {
             res.status(200).json({
                 ok: true,
                 msg: "Producto",
@@ -134,7 +139,7 @@ const updateProduct = async (req,res) =>{
     try{
 
         //Elementos que no se pueden actualizar
-        const {active, deleteDate, deleteUser, deleteReason, ...fields} = req.body;
+        const {deleteDate, deleteUser, deleteReason, ...fields} = req.body;
 
         await Product.findByIdAndUpdate(id, fields, {new: true})
             .then( data => {
