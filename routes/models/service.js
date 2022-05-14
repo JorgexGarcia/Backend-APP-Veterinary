@@ -31,9 +31,9 @@ router.post('/',
 router.put('/:id',
     [
         checkJWT,
-        check('name', 'Tiene que tener un nombre').not().isEmpty,
-        check('description', 'Tiene que tener una descripción').not().isEmpty,
-        check('price', 'Tiene que tener un precio').not().isEmpty,
+        check('name').not().isEmpty().withMessage('Tiene que tener un nombre'),
+        check('description', 'Tiene que tener una descripción').not().isEmpty(),
+        check('price', 'Tiene que tener un precio').not().isEmpty(),
         checkField
     ],
     updateService
