@@ -44,7 +44,7 @@ const getOneAid = async (req,res)=>{
     try{
 
         await Aid.findById(id)
-            .populate('idUser', 'name lastName img')
+            .populate('idUser', 'id name lastName img')
             .then( data => {
             res.status(200).json({
                 ok: true,
@@ -78,8 +78,9 @@ const createAid = async (req,res) =>{
 
     try{
 
+        console.log(req.user)
         const aid = new Aid({
-            id_user: req.user.id,
+            idUser: req.user.id,
             ...req.body
         });
 
@@ -90,6 +91,7 @@ const createAid = async (req,res) =>{
             }
         }
 
+        console.log(aid)
         await aid.save();
 
         res.status(201).json({

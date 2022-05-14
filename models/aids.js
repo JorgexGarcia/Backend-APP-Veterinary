@@ -22,7 +22,6 @@ const AidSchema = Schema ({
         type: Schema.Types.ObjectId,
         ref: 'User'
     }
-
 });
 
 //Para cambiar el nombre a un atributo o no visualizar uno que no quieres

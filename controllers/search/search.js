@@ -93,7 +93,7 @@ const searchByModel = async (req,res) =>{
                     .populate('deleteUser', 'name lastName img');
                 break;
             case 'aids':
-                data = await Aids.find({description: regx})
+                data = await Aids.find({name: regx})
                     .populate('idUser', 'name lastName img');
                 break;
             case 'queries':
