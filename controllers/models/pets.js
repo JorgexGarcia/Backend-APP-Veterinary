@@ -15,21 +15,22 @@ const getPets = async (req,res) =>{
     }
 
     try{
+        const active = req.params.active || true;
 
         const from = (Number(req.query.page) || 0) * 5;
 
         const [data , total] = await Promise.all([
-            Pet.find()
+            Pet.find({active: active})
                 .skip( from )
                 .limit(5)
-                .populate('breed', 'name')
-                .populate('treatment', 'name')
-                .populate('nextQueries', 'type')
-                .populate('queries', 'type')
-                .populate('idUser', 'name lastName img')
-                .populate('deleteUser', 'name lastName img'),
+                .populate('breed', 'id name')
+                .populate('treatment', 'id name')
+                .populate('nextQueries', 'id type')
+                .populate('queries', 'id type')
+                .populate('idUser', 'id name lastName img')
+                .populate('deleteUser', 'id name lastName img'),
 
-            Pet.countDocuments()
+            Pet.countDocuments({active: active})
         ]);
 
         res.status(200).json({
@@ -43,6 +44,37 @@ const getPets = async (req,res) =>{
         res.status(500).json({
             ok: false,
             msg: "Error inesperado...., llame a su administrador"
+        });
+    }
+
+}
+
+const getAllPets = async (req,res) =>{
+
+    try{
+
+        await Pet.find()
+            .populate('deleteUser', 'id name lastName img').then(
+                data => {
+                    res.status(200).json({
+                        ok: true,
+                        msg: "Listado de promociones",
+                        data
+                    })
+                }
+            ).catch(err => {
+                res.status(400).json({
+                    ok: true,
+                    msg: err
+                })
+            })
+
+
+
+    }catch (error) {
+        res.status(500).json({
+            ok: false,
+            msg: "Error inesperado..., llame a su administrador"
         });
     }
 
@@ -66,12 +98,12 @@ const getOnePet = async (req,res)=>{
     try{
 
         await Pet.findById(id)
-            .populate('breed', 'name')
-            .populate('treatment', 'name')
-            .populate('nextQueries', 'type')
-            .populate('queries', 'type')
-            .populate('idUser', 'name lastName img')
-            .populate('deleteUser', 'name lastName img')
+            .populate('breed', 'id name')
+            .populate('treatment', 'id name')
+            .populate('nextQueries', 'id type')
+            .populate('queries', 'id type')
+            .populate('idUser', 'id name lastName img')
+            .populate('deleteUser', 'id name lastName img')
             .then( data => {
             res.status(200).json({
                 ok: true,
@@ -151,10 +183,12 @@ const createPet = async (req,res) =>{
 
         await pet.save();
 
-        const userParent = await User.findById(pet.idUser)
-        userParent.listPets.push(pet.id);
+        if(pet.idUser){
+            const userParent = await User.findById(pet.idUser)
+            userParent.listPets.push(pet.id);
 
-        await User.findByIdAndUpdate(pet.idUser, userParent);
+            await User.findByIdAndUpdate(pet.idUser, userParent);
+        }
 
         res.status(201).json({
             ok: true,
@@ -197,8 +231,7 @@ const updatePet = async (req,res) =>{
     try{
 
         //Elementos que no se pueden actualizar
-        const {chip, passport,
-            active, deleteDate, deleteUser, deleteReason, ...fields} = req.body;
+        const {chip, passport, deleteDate, deleteUser, deleteReason, ...fields} = req.body;
 
         const checkChip = await Pet.findOne({chip});
 
@@ -220,6 +253,14 @@ const updatePet = async (req,res) =>{
 
         fields.chip = chip;
         fields.passport = passport;
+
+        if(pet.idUser){
+            const userParent = await User.findById(pet.idUser);
+            if(!userParent.listPets.includes(pet.id)){
+                userParent.listPets.push(pet.id);
+            }
+            await User.findByIdAndUpdate(pet.idUser, userParent);
+        }
 
         await Pet.findByIdAndUpdate(id, fields, {new: true})
             .then( data => {
@@ -295,5 +336,6 @@ module.exports = {
     createPet,
     getOnePet,
     deletePet,
-    updatePet
+    updatePet,
+    getAllPets
 }

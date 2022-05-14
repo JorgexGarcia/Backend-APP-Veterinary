@@ -23,7 +23,6 @@ const PetSchema = Schema ({
         unique: true
     },
     idUser:{
-        required:true,
         type: Schema.Types.ObjectId,
         ref: 'User'
     },
