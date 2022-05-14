@@ -6,16 +6,17 @@ const Service = require('../../models/service');
 const getServices = async (req,res) =>{
 
     try{
+        const active = req.params.active || true;
 
         const from = (Number(req.query.page) || 0) * 5;
 
         const [data , total] = await Promise.all([
-            Service.find()
+            Service.find({active: active})
                 .skip( from )
                 .limit(5)
                 .populate('deleteUser', 'name lastName img'),
 
-            Service.countDocuments()
+            Service.countDocuments({active: active})
         ]);
 
         res.status(200).json({
@@ -29,6 +30,37 @@ const getServices = async (req,res) =>{
         res.status(500).json({
             ok: false,
             msg: "Error inesperado...., llame a su administrador"
+        });
+    }
+
+}
+
+const getAllServices = async (req,res) =>{
+
+    try{
+
+        await Service.find()
+            .populate('deleteUser', 'name lastName img').then(
+                data => {
+                    res.status(200).json({
+                        ok: true,
+                        msg: "Listado de servicios",
+                        data
+                    })
+                }
+            ).catch(err => {
+                res.status(400).json({
+                    ok: true,
+                    msg: err
+                })
+            })
+
+
+
+    }catch (error) {
+        res.status(500).json({
+            ok: false,
+            msg: "Error inesperado..., llame a su administrador"
         });
     }
 
@@ -114,7 +146,7 @@ const updateService = async (req,res) =>{
     try{
 
         //Elementos que no se pueden actualizar
-        const {active, deleteDate, deleteUser, deleteReason, ...fields} = req.body;
+        const {deleteDate, deleteUser, deleteReason, ...fields} = req.body;
 
         await Service.findByIdAndUpdate(id, fields, {new: true})
             .then( data => {
@@ -190,5 +222,6 @@ module.exports = {
     getOneService,
     createService,
     updateService,
-    deleteService
+    deleteService,
+    getAllServices
 }

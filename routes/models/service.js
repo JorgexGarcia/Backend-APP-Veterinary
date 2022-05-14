@@ -3,6 +3,7 @@ const {getServices,
     getOneService,
     createService,
     updateService,
+    getAllServices,
     deleteService} = require('../../controllers/models/service');
 const {check} = require("express-validator");
 const {checkField} = require('../../middlewares/check-field')
@@ -10,19 +11,11 @@ const {checkJWT} = require("../../middlewares/check-JWT");
 
 const router = Router();
 
-router.get('/',
-    [
-        checkJWT
-    ],
-    getServices
-);
+router.get('/all/:active', checkJWT, getServices);
 
-router.get('/:id',
-    [
-        checkJWT
-    ],
-    getOneService
-);
+router.get('/one/:id', checkJWT, getOneService);
+
+router.get('/page/all', checkJWT, getAllServices);
 
 router.post('/',
     [
@@ -46,11 +39,6 @@ router.put('/:id',
     updateService
 );
 
-router.delete('/:id',
-    [
-        checkJWT
-    ],
-    deleteService
-);
+router.put('/delete/:id', checkJWT, deleteService);
 
 module.exports = router;
