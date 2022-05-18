@@ -48,6 +48,45 @@ const getUsers = async (req,res) =>{
 
 }
 
+const getAllUsers = async (req,res) =>{
+
+    try{
+
+        if(req.user.rol === 'USER_ROLE'){
+            return res.status(401).json({
+                ok: false,
+                msg: 'Usuario sin permisos'
+            });
+        }else{
+
+            await User.find({active: true})
+                .populate('listPets', 'name img' )
+                .populate('promotions', 'name img')
+                .populate('deleteUser', 'name lastName img').then(
+                    data => {
+                        res.status(200).json({
+                            ok: true,
+                            msg: "Listado de usuarios",
+                            data
+                        })
+                    }
+                ).catch(err => {
+                    res.status(400).json({
+                        ok: true,
+                        msg: err
+                    })
+                });
+        }
+
+    }catch (error) {
+        res.status(500).json({
+            ok: false,
+            msg: "Error inesperado...., llame a su administrador"
+        });
+    }
+
+}
+
 /**
  * Método para conseguir un usuario según su id enviada por la url.
  *  - Sin eres usuario no puedes acceder al método a no ser que seas tu mismo.
@@ -329,5 +368,6 @@ module.exports = {
     getOneUser,
     createUser,
     deleteUser,
-    updateUser
+    updateUser,
+    getAllUsers
 }

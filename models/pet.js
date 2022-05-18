@@ -38,9 +38,9 @@ const PetSchema = Schema ({
         type: String,
         required: true
     },
-    chronic: [{
+    chronic: {
         type: String
-    }],
+    },
     weight: [{
         type: Number
     }],
@@ -65,9 +65,9 @@ const PetSchema = Schema ({
         type: Schema.Types.ObjectId,
         ref: 'Treatment'
     }],
-    comment: [{
+    comment: {
         type: String
-    }],
+    },
     createDate: {
         type: Date,
         required: true

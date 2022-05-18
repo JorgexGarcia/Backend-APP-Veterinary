@@ -39,7 +39,7 @@ const getAllPromotions = async (req,res) =>{
 
     try{
 
-        await Promotion.find()
+        await Promotion.find({active: true})
             .populate('deleteUser', 'name lastName img').then(
                 data => {
                     res.status(200).json({

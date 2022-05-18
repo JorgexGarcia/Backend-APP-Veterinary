@@ -1,6 +1,6 @@
 const {Router} = require("express");
 const {getUsers, getOneUser, deleteUser,
-    createUser,updateUser } = require('../../controllers/models/user');
+    createUser,updateUser, getAllUsers } = require('../../controllers/models/user');
 const {check} = require("express-validator");
 const {checkField} = require('../../middlewares/check-field')
 const {checkJWT} = require("../../middlewares/check-JWT");
@@ -9,6 +9,8 @@ const {checkJWT} = require("../../middlewares/check-JWT");
 const router = Router();
 
 router.get('/all/:active', checkJWT, getUsers);
+
+router.get('/pages/all', checkJWT, getAllUsers);
 
 router.get('/one/:id', checkJWT, getOneUser);
 

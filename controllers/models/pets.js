@@ -140,18 +140,18 @@ const createPet = async (req,res) =>{
 
     try{
 
-        const {chip, passport} = req.body;
+        const {chip, passport, idUser, ...fields} = req.body;
 
-        const pet = new Pet (req.body);
+        const pet = new Pet (fields);
 
-        if(!req.body.img){
+        if(!fields.img){
             pet.img = {
                 imgId: 'Null',
                 url: 'https://res.cloudinary.com/app-veterinary/image/upload/v1651750342/no-img.jpg'
             }
         }
 
-        const newData = `${pet.name}${pet.id_user}${Date.now()}`;
+        const newData = `${pet.name}${pet.idUser}${Date.now()}`;
 
         if(chip){
             const checkChip = await Pet.findOne({chip});
@@ -181,14 +181,10 @@ const createPet = async (req,res) =>{
             pet.passport = newData;
         }
 
+        pet.chip = chip;
+        pet.passport = passport;
+
         await pet.save();
-
-        if(pet.idUser){
-            const userParent = await User.findById(pet.idUser)
-            userParent.listPets.push(pet.id);
-
-            await User.findByIdAndUpdate(pet.idUser, userParent);
-        }
 
         res.status(201).json({
             ok: true,
@@ -197,9 +193,11 @@ const createPet = async (req,res) =>{
         });
 
     }catch (error) {
+        console.log(error)
         res.status(500).json({
             ok: false,
-            msg: "Error inesperado...., llame a su administrador"
+            msg: "Error inesperado...., llame a su administrador",
+            error
         });
     }
 
@@ -221,7 +219,7 @@ const updatePet = async (req,res) =>{
         }
     })
 
-    if(req.user.rol === 'USER_ROLE' || !checkPet){
+    if(req.user.rol === 'USER_ROLE' && !checkPet){
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -230,36 +228,55 @@ const updatePet = async (req,res) =>{
 
     try{
 
+        const petDB = await Pet.findById(id);
+
+        if(!petDB){
+            res.status(404).json({
+                ok: false,
+                msg: "No se encontró el animal"
+            });
+        }
+
         //Elementos que no se pueden actualizar
-        const {chip, passport, deleteDate, deleteUser, deleteReason, ...fields} = req.body;
+        const {chip, passport, deleteDate,idUser, deleteUser, deleteReason, ...fields} = req.body;
 
-        const checkChip = await Pet.findOne({chip});
+        if(petDB.chip !== chip){
+            const checkChip = await Pet.findOne({chip});
 
-        if(checkChip){
-            return res.status(409).json({
-                ok: false,
-                msg: 'El chip ya esta registrado'
-            });
+            if(checkChip){
+                return res.status(409).json({
+                    ok: false,
+                    msg: 'El chip ya esta registrado'
+                });
+            }
         }
-
-        const checkPassport = await Pet.findOne({passport});
-
-        if(checkPassport){
-            return res.status(409).json({
-                ok: false,
-                msg: 'El pasaporte ya esta registrado'
-            });
-        }
-
         fields.chip = chip;
+
+        if(petDB.passport !== passport){
+            const checkPassport = await Pet.findOne({passport});
+
+            if(checkPassport){
+                return res.status(409).json({
+                    ok: false,
+                    msg: 'El pasaporte ya esta registrado'
+                });
+            }
+        }
         fields.passport = passport;
 
-        if(pet.idUser){
-            const userParent = await User.findById(pet.idUser);
-            if(!userParent.listPets.includes(pet.id)){
-                userParent.listPets.push(pet.id);
+        if(idUser.length > 1){
+            const userParent = await User.findById(idUser);
+            if(!userParent.listPets.includes(petDB.id)){
+                userParent.listPets.push(petDB.id);
             }
-            await User.findByIdAndUpdate(pet.idUser, userParent);
+            await User.findByIdAndUpdate(idUser, userParent);
+            fields.idUser = idUser;
+
+            if(petDB.idUser){
+                let userOldParent = await User.findById(petDB.idUser) ;
+                userOldParent.listPets = userOldParent.listPets.filter((item) => item.toString() !== petDB.id);
+                await User.findByIdAndUpdate(petDB.idUser, userOldParent);
+            }
         }
 
         await Pet.findByIdAndUpdate(id, fields, {new: true})
@@ -272,6 +289,7 @@ const updatePet = async (req,res) =>{
             });
 
     }catch (error) {
+        console.log(error)
         res.status(500).json({
             ok: false,
             msg: "Error inesperado...., llame a su administrador"

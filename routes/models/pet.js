@@ -26,9 +26,6 @@ router.post('/',
         check('sex', 'Tienes que indicar el sexo del animal').not().isEmpty(),
         check('sterilized', 'Tienes que indicar si esta esterilizado el animal').not().isEmpty(),
         check('color', 'Tienes que indicar el color del animal').not().isEmpty(),
-        check('breed', 'Tienes que indicar la raza del animal').not()
-            .isEmpty()
-            .isMongoId(),
         check('type', 'Tienes que indicar el tipo del animal').not().isEmpty(),
         check('createDate', 'Tienes que indicar la fecha de creación del animal').not().isEmpty(),
         checkField
@@ -44,9 +41,6 @@ router.put('/:id',
         check('sex', 'Tienes que indicar el sexo del animal').not().isEmpty(),
         check('sterilized', 'Tienes que indicar si esta esterilizado el animal').not().isEmpty(),
         check('color', 'Tienes que indicar el color del animal').not().isEmpty(),
-        check('race', 'Tienes que indicar la raza del animal').not()
-            .isEmpty()
-            .isMongoId(),
         check('type', 'Tienes que indicar el tipo del animal').not().isEmpty(),
         check('createDate', 'Tienes que indicar la fecha de creación del animal').not().isEmpty(),
         checkField
