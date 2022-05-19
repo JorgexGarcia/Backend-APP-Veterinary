@@ -22,7 +22,6 @@ router.post('/',
         checkJWT,
         check('startDate', 'Se necesita una fecha de inicio').not().isEmpty(),
         check('description', 'Se necesita una descripción').not().isEmpty(),
-        check('idPet', 'Tiene que tener un animal asignado').not().isMongoId(),
         check('name', 'Tiene que tener un nombre').not().isEmpty(),
         checkField
     ],
@@ -34,14 +33,12 @@ router.put('/:id',
         checkJWT,
         check('startDate', 'Se necesita una fecha de inicio').not().isEmpty(),
         check('description', 'Se necesita una descripción').not().isEmpty(),
-        check('idPet', 'Tiene que tener un animal asignado').not().isMongoId(),
         check('name', 'Tiene que tener un nombre').not().isEmpty(),
         checkField
     ],
     updateTreatment
 );
 
-router.delete('/:id', checkJWT, deleteTreatment
-);
+router.put('/delete/:id', checkJWT, deleteTreatment);
 
 module.exports = router;
