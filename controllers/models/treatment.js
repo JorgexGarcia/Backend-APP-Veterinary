@@ -8,17 +8,19 @@ const getTreatments = async (req,res) =>{
 
     try{
 
+        const active = req.params.active || true;
+
         const from = (Number(req.query.page) || 0) * 5;
 
         const [data , total] = await Promise.all([
-            Treatment.find()
+            Treatment.find( {active: active})
                 .skip( from )
                 .limit(5)
-                .populate('idPet', 'name img')
-                .populate('idUser', 'name lastName img')
-                .populate('deleteUser', 'name lastName img'),
+                .populate('idPet', 'id name img')
+                .populate('idUser', 'id name lastName img')
+                .populate('deleteUser', 'id name lastName img'),
 
-            Treatment.countDocuments()
+            Treatment.countDocuments({active: active})
         ]);
 
         res.status(200).json({
@@ -27,6 +29,46 @@ const getTreatments = async (req,res) =>{
             data,
             total
         });
+
+    }catch (error) {
+        res.status(500).json({
+            ok: false,
+            msg: "Error inesperado...., llame a su administrador"
+        });
+    }
+
+}
+
+const getAllTreatments = async (req,res) =>{
+
+    try{
+
+        if(req.user.rol === 'USER_ROLE'){
+            return res.status(401).json({
+                ok: false,
+                msg: 'Usuario sin permisos'
+            });
+        }else{
+
+            await Treatment.find({active: true})
+                .populate('idPet', 'id name img')
+                .populate('idUser', 'id name lastName img')
+                .populate('deleteUser', 'id name lastName img')
+                .then(
+                    data => {
+                        res.status(200).json({
+                            ok: true,
+                            msg: "Listado de tratamientos",
+                            data
+                        })
+                    }
+                ).catch(err => {
+                    res.status(400).json({
+                        ok: true,
+                        msg: err
+                    })
+                });
+        }
 
     }catch (error) {
         res.status(500).json({
@@ -47,9 +89,9 @@ const getOneTreatment = async (req,res)=>{
     try{
 
         await Treatment.findById(id)
-            .populate('idPet', 'name img')
-            .populate('idUser', 'name lastName img')
-            .populate('deleteUser', 'name lastName img')
+            .populate('idPet', 'id name img')
+            .populate('idUser', 'id name lastName img')
+            .populate('deleteUser', 'id name lastName img')
             .then( data => {
             res.status(200).json({
                 ok: true,
@@ -130,7 +172,7 @@ const updateTreatment = async (req,res) =>{
     try{
 
         //Elementos que no se pueden actualizar
-        const {active, deleteDate, deleteUser, deleteReason, ...fields} = req.body;
+        const {deleteDate, deleteUser, deleteReason, ...fields} = req.body;
 
         const data = fields;
         data.idUser = req.id;
@@ -215,5 +257,6 @@ module.exports = {
     getOneTreatment,
     createTreatment,
     updateTreatment,
+    getAllTreatments,
     deleteTreatment
 }

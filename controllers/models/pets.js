@@ -250,7 +250,9 @@ const updatePet = async (req,res) =>{
                 });
             }
         }
-        fields.chip = chip;
+        if(chip !== ''){
+            fields.chip = chip;
+        }
 
         if(petDB.passport !== passport){
             const checkPassport = await Pet.findOne({passport});
@@ -262,22 +264,27 @@ const updatePet = async (req,res) =>{
                 });
             }
         }
-        fields.passport = passport;
+        if(passport !== ''){
+            fields.passport = passport;
+        }
 
-        if(idUser.length > 1){
-            const userParent = await User.findById(idUser);
-            if(!userParent.listPets.includes(petDB.id)){
-                userParent.listPets.push(petDB.id);
-            }
-            await User.findByIdAndUpdate(idUser, userParent);
-            fields.idUser = idUser;
+        if(idUser){
+            if(idUser.length > 1){
+                const userParent = await User.findById(idUser);
+                if(!userParent.listPets.includes(petDB.id)){
+                    userParent.listPets.push(petDB.id);
+                }
+                await User.findByIdAndUpdate(idUser, userParent);
+                fields.idUser = idUser;
 
-            if(petDB.idUser){
-                let userOldParent = await User.findById(petDB.idUser) ;
-                userOldParent.listPets = userOldParent.listPets.filter((item) => item.toString() !== petDB.id);
-                await User.findByIdAndUpdate(petDB.idUser, userOldParent);
+                if(petDB.idUser){
+                    let userOldParent = await User.findById(petDB.idUser) ;
+                    userOldParent.listPets = userOldParent.listPets.filter((item) => item.toString() !== petDB.id);
+                    await User.findByIdAndUpdate(petDB.idUser, userOldParent);
+                }
             }
         }
+
 
         await Pet.findByIdAndUpdate(id, fields, {new: true})
             .then( data => {
