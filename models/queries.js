@@ -11,10 +11,6 @@ const QueriesSchema = Schema ({
         type: Schema.Types.ObjectId,
         ref: 'Pet'
     },
-    position: {
-        type: Number,
-        required: true
-    },
     idUser:{
         required:true,
         type: Schema.Types.ObjectId,
@@ -52,9 +48,12 @@ const QueriesSchema = Schema ({
         type: Boolean,
         default: false
     },
-    date: {
+    startDate: {
         type: Date,
         required: true
+    },
+    finishDate: {
+        type: Date,
     },
     active: {
         type: Boolean,
