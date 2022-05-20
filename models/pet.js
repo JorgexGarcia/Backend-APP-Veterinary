@@ -61,10 +61,10 @@ const PetSchema = Schema ({
         type: Schema.Types.ObjectId,
         ref: 'Queries'
     }],
-    treatment: [{
+    treatment: {
         type: Schema.Types.ObjectId,
         ref: 'Treatment'
-    }],
+    },
     comment: {
         type: String
     },

@@ -126,6 +126,7 @@ const createTreatment = async (req,res) =>{
             });
         }
 
+        console.log(req.body);
         const treatment = new Treatment({
             idUser: req.user.id,
             ...req.body
@@ -134,7 +135,9 @@ const createTreatment = async (req,res) =>{
         await treatment.save();
 
         const petParent = await Pet.findById(treatment.idPet);
-        petParent.treatment.push(treatment.id);
+        console.log(treatment.idPet);
+        console.log(petParent)
+        petParent.treatment = treatment.id;
 
         await Pet.findByIdAndUpdate(treatment.idPet, petParent);
 
@@ -145,6 +148,7 @@ const createTreatment = async (req,res) =>{
         })
 
     }catch (error) {
+        console.log((error))
         res.status(500).json({
             ok: false,
             msg: "Error inesperado...., llame a su administrador"
