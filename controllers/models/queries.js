@@ -176,6 +176,7 @@ const createQueries = async (req,res) =>{
  */
 const updateQueries = async (req,res) =>{
 
+
     if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
             ok: false,
@@ -193,12 +194,16 @@ const updateQueries = async (req,res) =>{
         const data = fields;
         data.idUser = req.id;
 
-        if(data.finish){
-            const petParent = await Pet.findById(data.idPet);
-            const num = petParent.nextQueries.indexOf(id);
-            const old = petParent.nextQueries.splice(num, 1);
-            petParent.queries.push(old);
-            await Pet.findByIdAndUpdate(data.idPet, petParent);
+        const querieDB = await Queries.findById(id);
+
+        if(querieDB.active === true){
+            if(data.finish){
+                const petParent = await Pet.findById(data.idPet);
+                const num = petParent.nextQueries.indexOf(id);
+                const old = petParent.nextQueries.splice(num, 1);
+                petParent.queries.push(old);
+                await Pet.findByIdAndUpdate(data.idPet, petParent);
+            }
         }
 
         await Queries.findByIdAndUpdate(id, data, {new: true})
@@ -211,6 +216,7 @@ const updateQueries = async (req,res) =>{
             });
 
     }catch (error) {
+        console.log('querie : ' + error)
         res.status(500).json({
             ok: false,
             msg: "Error inesperado...., llame a su administrador"

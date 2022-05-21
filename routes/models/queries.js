@@ -15,14 +15,14 @@ router.get('/all/:active', checkJWT, getQueries);
 
 router.get('/pages/all', checkJWT, getAllQueries);
 
-router.get('/one//:id', checkJWT, getOneQueries);
+router.get('/one/:id', checkJWT, getOneQueries);
 
 router.post('/',
     [
         checkJWT,
         check('type', 'El tipo tiene que ser obligatorio').not().isEmpty(),
         check('description', 'La descripción tiene que ser obligatoria').not().isEmpty(),
-        check('date', 'La fecha tiene que ser obligatoria').not().isEmpty(),
+        check('startDate', 'La fecha tiene que ser obligatoria').not().isEmpty(),
         checkField
     ],
     createQueries
@@ -33,7 +33,7 @@ router.put('/:id',
         checkJWT,
         check('type', 'El tipo tiene que ser obligatorio').not().isEmpty(),
         check('description', 'La descripción tiene que ser obligatoria').not().isEmpty(),
-        check('date', 'La fecha tiene que ser obligatoria').not().isEmpty(),
+        check('startDate', 'La fecha tiene que ser obligatoria').not().isEmpty(),
         checkField
     ],
     updateQueries

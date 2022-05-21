@@ -37,10 +37,10 @@ const QueriesSchema = Schema ({
     tests: {
         type: String
     },
-    treatment: [{
+    treatment: {
         type: Schema.Types.ObjectId,
         ref: 'Treatment'
-    }],
+    },
     diagnostic: {
         type: String
     },

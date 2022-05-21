@@ -148,7 +148,7 @@ const createTreatment = async (req,res) =>{
         })
 
     }catch (error) {
-        console.log((error))
+        console.log('tratamiento' + error)
         res.status(500).json({
             ok: false,
             msg: "Error inesperado...., llame a su administrador"
