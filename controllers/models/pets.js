@@ -25,8 +25,8 @@ const getPets = async (req,res) =>{
                 .limit(5)
                 .populate('breed', 'id name')
                 .populate('treatment', 'id name')
-                .populate('nextQueries', 'id type')
-                .populate('queries', 'id type')
+                .populate('nextQueries', 'id type description')
+                .populate('queries', 'id type description')
                 .populate('idUser', 'id name lastName img')
                 .populate('deleteUser', 'id name lastName img'),
 
@@ -100,8 +100,8 @@ const getOnePet = async (req,res)=>{
         await Pet.findById(id)
             .populate('breed', 'id name')
             .populate('treatment', 'id name')
-            .populate('nextQueries', 'id type')
-            .populate('queries', 'id type')
+            .populate('nextQueries', 'id type description')
+            .populate('queries', 'id type description')
             .populate('idUser', 'id name lastName img')
             .populate('deleteUser', 'id name lastName img')
             .then( data => {

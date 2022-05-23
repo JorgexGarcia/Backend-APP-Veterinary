@@ -230,8 +230,8 @@ const createUser = async (req,res) =>{
 
 /**
  * Método para actualizar un usuario.
- *  - Sin eres usuario no puedes acceder al método a no ser que seas tu mismo.
- *  - Compruebo si el usuario esta en la BD, sino esta devuelvo un status 404
+ *  - Si eres usuario no puedes acceder al método a no ser que seas tu mismo.
+ *  - Compruebo si el usuario está en la BD, si no esta devuelvo un status 404
  *  - Si esta, compruebo que el nuevo email o dni no coincide con ningún otro en la BD
  *  - Si no coincide, actualizo el usuario.
  *  - No se puede actualizar:
@@ -262,9 +262,7 @@ const updateUser = async (req,res) =>{
         //Elementos que no se pueden actualizar
         const {email, dni, active,
             deleteDate, deleteUser, deleteReason, ...fields} = req.body;
-        if(req.user.rol !== 'GERENTE_ROLE'){
-            const {rol, ...fields} = fields;
-        }
+
 
         if(userDB.email !== email){
             const checkEmail = await User.findOne({email});
@@ -306,6 +304,7 @@ const updateUser = async (req,res) =>{
         });
 
     }catch (error) {
+        console.log(error)
         res.status(500).json({
             ok: false,
             msg: "Error inesperado...., llame a su administrador"
