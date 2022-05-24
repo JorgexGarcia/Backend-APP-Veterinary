@@ -97,6 +97,7 @@ const createProduct = async (req,res) =>{
 
         const product = new Product(req.body);
 
+        //Imagen por defecto
         if(!req.body.img){
             product.img = {
                 imgId: 'Null',

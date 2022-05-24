@@ -9,6 +9,10 @@ const {checkField} = require('../../middlewares/check-field')
 const {check} = require("express-validator");
 const {checkJWT} = require("../../middlewares/check-JWT");
 
+/**
+ * Rutas para los tratamientos.
+ */
+
 const router = Router();
 
 router.get('/all/:active', checkJWT, getTreatments);

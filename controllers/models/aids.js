@@ -65,7 +65,7 @@ const getOneAid = async (req,res)=>{
 /**
  * Método para crear un consejo.
  * - Si eres usuario no puedes acceder.
- * - Guardamos el usuario que creo el consejo.
+ * - Guardamos el usuario que modifico el consejo.
  */
 const createAid = async (req,res) =>{
 
@@ -78,12 +78,12 @@ const createAid = async (req,res) =>{
 
     try{
 
-        console.log(req.user)
         const aid = new Aid({
             idUser: req.user.id,
             ...req.body
         });
 
+        //Imagen por defecto
         if(!req.body.img){
             aid.img = {
                 imgId: 'Null',
@@ -91,7 +91,6 @@ const createAid = async (req,res) =>{
             }
         }
 
-        console.log(aid)
         await aid.save();
 
         res.status(201).json({

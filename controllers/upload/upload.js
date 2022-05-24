@@ -1,5 +1,8 @@
 const { v4: uuid } = require('uuid');
 const cloudinary = require('cloudinary');
+/**
+ * Configurador de Cloudinary
+ */
 cloudinary.config({
    cloud_name: process.env.CLOUD_NAME,
    api_key: process.env.API_KEY,
@@ -13,6 +16,9 @@ const Product = require('../../models/product');
 const Pet = require('../../models/pet');
 const Queries = require('../../models/queries');
 
+/**
+ * Método para subir el archivo que se encuentra en la carpeta files a cloudinary.
+ */
 const updateImg = async (path, model, id, name, type) => {
 
     let result;
@@ -55,6 +61,7 @@ const updateImg = async (path, model, id, name, type) => {
             await aid.save();
             fs.unlinkSync(path);
             break;
+
         case 'promotion':
             result = await cloudinary.v2.uploader.upload(path, {
                 public_id: name
@@ -71,6 +78,7 @@ const updateImg = async (path, model, id, name, type) => {
             await Promotion.findByIdAndUpdate(id, promotion);
             fs.unlinkSync(path);
             break;
+
         case 'product':
             result = await cloudinary.v2.uploader.upload(path, {
                 public_id: name
@@ -87,6 +95,7 @@ const updateImg = async (path, model, id, name, type) => {
             await product.save();
             fs.unlinkSync(path);
             break;
+
         case  'pet':
             result = await cloudinary.v2.uploader.upload(path, {
                 public_id: name
@@ -103,6 +112,7 @@ const updateImg = async (path, model, id, name, type) => {
             await pet.save();
             fs.unlinkSync(path);
             break;
+
         case 'queries':
             switch (type){
                 case 'img': case 'pdf':
@@ -132,6 +142,9 @@ const updateImg = async (path, model, id, name, type) => {
     }
 }
 
+/**
+ * Método para comprobar si es una ext válida.
+ */
 const checkExt = (ext, model, type) => {
     const extValid = ['png', 'jpg', 'svg', 'gif', 'jpeg'];
     switch (model){
@@ -160,13 +173,13 @@ const checkExt = (ext, model, type) => {
     return {type: type,ok: true};
 }
 
+/**
+ * Método que recoge el archivo de la petición y lo guarda en la carpeta files.
+ */
 const fileUpload = async (req,res) =>{
-
-    console.log(1)
 
     //Comprobamos si tiene permisos
     if(req.user.rol === 'USER_ROLE'){
-        console.log('c')
         return res.status(401).json({
             ok: false,
             msg: 'Usuario sin permisos'
@@ -182,7 +195,6 @@ const fileUpload = async (req,res) =>{
         const modelsValids = ['user', 'aids', 'queries',
             'promotion', 'product', 'pet'];
         if(!modelsValids.includes(model)){
-            console.log('b')
             return res.status(401).json({
                 ok: false,
                 msg: 'Modelo no existe'
@@ -191,7 +203,6 @@ const fileUpload = async (req,res) =>{
 
         //Comprobamos si hay un archivo en la petición
         if( !req.files || Object.keys(req.files).length === 0){
-            console.log('a')
             return res.status(401).json({
                 ok: false,
                 msg: 'No hay ningún archivo'
@@ -206,7 +217,6 @@ const fileUpload = async (req,res) =>{
         //Comprobamos si es una ext válida
         const end = checkExt(ext, model, type);
         if(!end.ok){
-            console.log('d')
             return res.status(401).json({
                 ok: false,
                 msg: 'Extensión no permitida'
@@ -222,7 +232,6 @@ const fileUpload = async (req,res) =>{
         //Mover img
         file.mv(path, async (err) =>{
             if(err){
-                console.log(err)
                 return res.status(500).json({
                     ok: false,
                     msg: "Error inesperado..., llame a su administrador"
@@ -231,7 +240,6 @@ const fileUpload = async (req,res) =>{
 
             updateImg(path, model, id, name, type);
 
-            console.log('aa')
             res.status(200).json({
                 ok: true,
                 msg: 'Archivo subido'
@@ -239,7 +247,6 @@ const fileUpload = async (req,res) =>{
         })
 
     }catch (error) {
-        console.log(error)
         res.status(500).json({
             ok: false,
             msg: "Error inesperado..., llame a su administrador"

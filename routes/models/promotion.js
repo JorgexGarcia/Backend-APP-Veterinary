@@ -5,6 +5,10 @@ const {check} = require('express-validator');
 const {checkField} = require('../../middlewares/check-field')
 const {checkJWT} = require("../../middlewares/check-JWT");
 
+/**
+ * Rutas para las promociones.
+ */
+
 const router = Router();
 
 router.get('/all/:active', checkJWT, getPromotions);

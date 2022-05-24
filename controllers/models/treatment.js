@@ -39,6 +39,9 @@ const getTreatments = async (req,res) =>{
 
 }
 
+/**
+ * Método para conseguir los tratamientos sin paginación.
+ */
 const getAllTreatments = async (req,res) =>{
 
     try{
@@ -111,7 +114,7 @@ const getOneTreatment = async (req,res)=>{
 
 /**
  * Método para crear un tratamiento según la información pasada en la petición.
- *  - Sin eres usuario no puedes acceder al método.
+ *  - Si no eres usuario no puedes acceder al método.
  *  - Introducimos el usuario que realiza la petición en el tratamiento.
  *  - Introducimos la id en el apartado de tratamientos del animal.
  */
@@ -126,7 +129,6 @@ const createTreatment = async (req,res) =>{
             });
         }
 
-        console.log(req.body);
         const treatment = new Treatment({
             idUser: req.user.id,
             ...req.body
@@ -135,8 +137,6 @@ const createTreatment = async (req,res) =>{
         await treatment.save();
 
         const petParent = await Pet.findById(treatment.idPet);
-        console.log(treatment.idPet);
-        console.log(petParent)
         petParent.treatment = treatment.id;
 
         await Pet.findByIdAndUpdate(treatment.idPet, petParent);
@@ -148,7 +148,6 @@ const createTreatment = async (req,res) =>{
         })
 
     }catch (error) {
-        console.log('tratamiento' + error)
         res.status(500).json({
             ok: false,
             msg: "Error inesperado...., llame a su administrador"
@@ -159,7 +158,7 @@ const createTreatment = async (req,res) =>{
 
 /**
  * Método para actualizar un tratamiento.
- *  - Sin eres usuario no puedes acceder al método.
+ *  - Si no eres usuario no puedes acceder al método.
  *  - Introducimos el usuario que realiza la petición en el tratamiento.
  */
 const updateTreatment = async (req,res) =>{
@@ -201,10 +200,9 @@ const updateTreatment = async (req,res) =>{
 
 /**
  * Método para borrar un usuario.
- *  - Sin eres usuario no puedes acceder al método.
+ *  - Si no eres usuario no puedes acceder al método.
  *  - No eliminamos el tratamiento, la marcamos como no activa, guardamos la fecha,
  *      motivo y usuario que la desea eliminar.
- *  - Eliminamos el tratamiento del animal
  */
 const deleteTreatment = async (req,res) =>{
 
@@ -216,7 +214,6 @@ const deleteTreatment = async (req,res) =>{
     }
 
     const id = req.params.id;
-    console.log(id)
 
     try{
 
@@ -233,11 +230,6 @@ const deleteTreatment = async (req,res) =>{
         data.deleteDate = Date.now();
         data.deleteReason = req.body.reason || 'Sin motivo';
         data.deleteUser = req.user.id;
-
-        const petParent = await Pet.findById(data.idPet);
-        const num = petParent.treatment.indexOf(id);
-        petParent.treatment.splice(num, 1);
-        await Pet.findByIdAndUpdate(data.idPet, petParent);
 
         await Treatment.findByIdAndUpdate(id, data, {new: true})
             .then( data => {

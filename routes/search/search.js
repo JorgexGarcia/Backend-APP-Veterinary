@@ -2,6 +2,9 @@ const {Router} = require("express");
 const {searchAll, searchByModel} = require('../../controllers/search/search');
 const {checkJWT} = require("../../middlewares/check-JWT");
 
+/**
+ * Rutas para las búsquedas.
+ */
 
 const router = Router();
 

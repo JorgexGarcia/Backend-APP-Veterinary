@@ -44,6 +44,9 @@ const getBreeds = async (req,res) =>{
 
 }
 
+/**
+ *Método para obtener el listado de todas las razas sin paginación
+ */
 const getAllBreeds = async (req,res) =>{
 
     try{
@@ -56,7 +59,7 @@ const getAllBreeds = async (req,res) =>{
         }else{
 
             await Breed.find({active: true})
-                .populate('deleteUser', 'name lastName img').then(
+                .populate('deleteUser', 'id name lastName img').then(
                     data => {
                         res.status(200).json({
                             ok: true,
@@ -99,7 +102,7 @@ const getOneBreed = async (req,res)=>{
     try{
 
         await Breed.findById(id)
-            .populate('deleteUser', 'name lastName img')
+            .populate('deleteUser', 'id name lastName img')
             .then( data => {
             res.status(200).json({
                 ok: true,

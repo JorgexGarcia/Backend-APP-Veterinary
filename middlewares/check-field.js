@@ -1,11 +1,11 @@
 const {validationResult} = require("express-validator");
 
-
+/**
+ * Método que comprueba si la petición le faltan atos y por lo tanto tiene algun error
+ */
 const checkField = (req, res, next) => {
 
     const errors = validationResult( req );
-
-    console.log(errors)
 
     if(!errors.isEmpty()){
         return res.status(400).json({
@@ -14,7 +14,6 @@ const checkField = (req, res, next) => {
         });
     }
 
-    console.log('2');
     next();
 
 }

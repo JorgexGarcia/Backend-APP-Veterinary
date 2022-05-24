@@ -8,6 +8,9 @@ const Product = require('../../models/product');
 const Pet = require('../../models/pet');
 const Breed= require('../../models/breed');
 
+/**
+ * Método para buscar en todos las tablas de la base de datos.
+ */
 const searchAll = async (req,res) =>{
 
     if(req.user.rol === 'USER_ROLE'){
@@ -68,6 +71,9 @@ const searchAll = async (req,res) =>{
 
 }
 
+/**
+ * Método para buscar en una sola tabla de datos
+ */
 const searchByModel = async (req,res) =>{
 
     if(req.user.rol === 'USER_ROLE'){

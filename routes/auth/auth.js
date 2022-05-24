@@ -6,6 +6,9 @@ const {checkJWT} = require("../../middlewares/check-JWT");
 
 const router = Router();
 
+/**
+ * Rutas para el Login
+ */
 router.post('/',
     [
         check('email','El email es obligatorio').not().isEmpty(),

@@ -2,9 +2,14 @@ const User = require('../../models/user');
 const bcrypt = require('bcryptjs');
 const {generateJWT} = require("../../helpers/jwt");
 
+
+/**
+ * Método para hacer Login
+ */
 const login = async (req,res) =>{
 
     try{
+
         const {email, password} = req.body;
 
         const userDB = await User.findOne({email});
@@ -47,6 +52,9 @@ const login = async (req,res) =>{
 
 }
 
+/**
+ * Método para renovar el token
+ */
 const renewToken = async (req, res) => {
 
     //Generar token

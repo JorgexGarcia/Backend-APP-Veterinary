@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 
-
+/**
+ * Consigurador de la BD
+ */
 const dbConnection = async () => {
 
     try {

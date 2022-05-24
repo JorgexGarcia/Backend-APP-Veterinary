@@ -49,6 +49,9 @@ const getQueries = async (req,res) =>{
 
 }
 
+/**
+ * Método para obtener todas las consultas sin paginación
+ */
 const getAllQueries = async (req,res) =>{
 
     try{
@@ -147,6 +150,7 @@ const createQueries = async (req,res) =>{
 
         await queries.save();
 
+        //Cuando creamos una consulta la introducimos en el listado de próximas consultas del animal
         const petParent = await Pet.findById(queries.idPet);
         petParent.nextQueries.push(queries.id);
 
@@ -159,7 +163,6 @@ const createQueries = async (req,res) =>{
         })
 
     }catch (error) {
-        console.log(error)
         res.status(500).json({
             ok: false,
             msg: "Error inesperado...., llame a su administrador"
@@ -175,7 +178,6 @@ const createQueries = async (req,res) =>{
  *      en el animal de próximas consultas a consultas ya finalizadas.
  */
 const updateQueries = async (req,res) =>{
-
 
     if(req.user.rol === 'USER_ROLE'){
         return res.status(401).json({
@@ -196,6 +198,7 @@ const updateQueries = async (req,res) =>{
 
         const querieDB = await Queries.findById(id);
 
+        //Pasar de próximas consultas a finalizadas
         if(querieDB.active === true){
             if(data.finish){
                 const petParent = await Pet.findById(data.idPet);
@@ -216,7 +219,6 @@ const updateQueries = async (req,res) =>{
             });
 
     }catch (error) {
-        console.log('querie : ' + error)
         res.status(500).json({
             ok: false,
             msg: "Error inesperado...., llame a su administrador"

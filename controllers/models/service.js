@@ -35,6 +35,9 @@ const getServices = async (req,res) =>{
 
 }
 
+/**
+ * Método para conseguir todos los servicios sin paginación
+ */
 const getAllServices = async (req,res) =>{
 
     try{
@@ -67,7 +70,7 @@ const getAllServices = async (req,res) =>{
 }
 
 /**
- * Método para conseguir un servicio según su id enviada por la url.
+ * Método para conseguir un servicio.
  */
 const getOneService = async (req,res)=>{
 
@@ -96,7 +99,7 @@ const getOneService = async (req,res)=>{
 
 /**
  * Método para crear un servicio según la información pasada en la petición.
- *  - Sin eres usuario no puedes acceder al método.
+ *  - Si no eres usuario no puedes acceder al método.
  */
 const createService = async (req,res) =>{
 
@@ -130,7 +133,7 @@ const createService = async (req,res) =>{
 
 /**
  * Método para actualizar un servicio según la información pasada en la petición.
- *  - Sin eres usuario no puedes acceder al método.
+ *  - Si no eres usuario no puedes acceder al método.
  */
 const updateService = async (req,res) =>{
 
@@ -158,7 +161,6 @@ const updateService = async (req,res) =>{
             });
 
     }catch (error) {
-        console.log(error)
         res.status(500).json({
             ok: false,
             msg: "Error inesperado...., llame a su administrador"
@@ -169,7 +171,7 @@ const updateService = async (req,res) =>{
 
 /**
  * Método para eliminar un servicio.
- *  - Sin eres usuario no puedes acceder al método.
+ *  - Si no eres usuario no puedes acceder al método.
  *  - No eliminamos el servicio, lo marcamos como no activo, guardamos la fecha,
  *      el motivo y el usuario que lo desea eliminar
  */

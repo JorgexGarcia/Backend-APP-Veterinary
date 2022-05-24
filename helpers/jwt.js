@@ -1,5 +1,8 @@
 const jwt = require('jsonwebtoken');
 
+/**
+ * Método para generar un JWT
+ */
 const generateJWT = async (id) =>{
 
     return new Promise( (resolve, reject) => {

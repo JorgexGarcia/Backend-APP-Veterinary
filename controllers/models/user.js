@@ -48,6 +48,9 @@ const getUsers = async (req,res) =>{
 
 }
 
+/**
+ * Método para obtener el listado de los usuarios sin paginación.
+ */
 const getAllUsers = async (req,res) =>{
 
     try{
@@ -127,13 +130,13 @@ const getOneUser = async (req,res)=>{
 
 /**
  * Método para crear un usuario según la información pasada en la petición.
- *  - Sin eres usuario no puedes acceder al método
+ *  - Si no eres usuario no puedes acceder al método
  *  - Primero compruebo si ya hay un usuario con ese email:
  *      - Si ya tenemos uno, compruebo si está eliminado:
  *          - Si no esta, indico que hay un usuario con ese email
- *          - Si esta, loo actualizo con la nueva información y lo marco como activo
+ *          - Si esta, lo actualizo con la nueva información y lo marco como activo
  *  - Lo mismo con el dni
- *  - Si no esta el dni ni el email en la BD, creo un usuario nuevo.
+ *  - Si no está el dni ni el email en la BD, se genera un usuario nuevo.
  */
 const createUser = async (req,res) =>{
 
@@ -151,6 +154,7 @@ const createUser = async (req,res) =>{
     const salt = bcrypt.genSaltSync();
     user.password = bcrypt.hashSync(password, salt);
 
+    //Imagen por defecto
     if(!img){
         user.img = {
             imgId: 'Null',
@@ -234,8 +238,6 @@ const createUser = async (req,res) =>{
  *  - Compruebo si el usuario está en la BD, si no esta devuelvo un status 404
  *  - Si esta, compruebo que el nuevo email o dni no coincide con ningún otro en la BD
  *  - Si no coincide, actualizo el usuario.
- *  - No se puede actualizar:
- *      - password, auth, email, dni, active, delete_date, delete_user
  */
 const updateUser = async (req,res) =>{
 
@@ -304,7 +306,6 @@ const updateUser = async (req,res) =>{
         });
 
     }catch (error) {
-        console.log(error)
         res.status(500).json({
             ok: false,
             msg: "Error inesperado...., llame a su administrador"
@@ -314,8 +315,8 @@ const updateUser = async (req,res) =>{
 
 /**
  * Método para eliminar un Usuario.
- *  - Sin eres usuario no puedes acceder al método
- *  - No eliminamos un usuario de la BD, sino que lo marcamos como que no esta activo.
+ *  - Si no eres usuario no puedes acceder al método
+ *  - No eliminamos un usuario de la BD, sino que lo marcamos como que no está activo.
  *  - También añadimos la fecha de la eliminación y quien lo elimino para llevar un control.
  */
 const deleteUser = async (req,res) =>{

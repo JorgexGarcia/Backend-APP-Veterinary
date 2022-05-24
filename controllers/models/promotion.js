@@ -35,6 +35,9 @@ const getPromotions = async (req,res) =>{
 
 }
 
+/**
+ * Método para obtener todas las promociones sin paginación
+ */
 const getAllPromotions = async (req,res) =>{
 
     try{
@@ -110,6 +113,7 @@ const createPromotion = async (req,res) =>{
 
         const promotion = new Promotion (req.body);
 
+        //Imagen por defecto
         if(!req.body.img){
             promotion.img = {
                 imgId: 'Null',

@@ -49,6 +49,9 @@ const getPets = async (req,res) =>{
 
 }
 
+/**
+ * Método para obtener todas las mascotas sin paginación
+ */
 const getAllPets = async (req,res) =>{
 
     try{
@@ -68,8 +71,6 @@ const getAllPets = async (req,res) =>{
                     msg: err
                 })
             })
-
-
 
     }catch (error) {
         res.status(500).json({
@@ -125,9 +126,6 @@ const getOnePet = async (req,res)=>{
  * Método para crear un animal.
  *  - Si eres Usuario no puedes acceder al método.
  *  - Comprobamos si ya hay un chip o un pasaporte registrado.
- *  - Si no lo tiene, le introducimos la id del dueño
- *          con el nombre del animal y la fecha.
- *  - Si creamos el animal, introducimos en el dueño del animal la id en su lista
  */
 const createPet = async (req,res) =>{
 
@@ -144,6 +142,7 @@ const createPet = async (req,res) =>{
 
         const pet = new Pet (fields);
 
+        //Imagen por defecto
         if(!fields.img){
             pet.img = {
                 imgId: 'Null',
@@ -193,7 +192,6 @@ const createPet = async (req,res) =>{
         });
 
     }catch (error) {
-        console.log(error)
         res.status(500).json({
             ok: false,
             msg: "Error inesperado...., llame a su administrador",
@@ -268,6 +266,7 @@ const updatePet = async (req,res) =>{
             fields.passport = passport;
         }
 
+        //Añadimos en el listado del usuario el animal
         if(idUser){
             if(idUser.length > 1){
                 const userParent = await User.findById(idUser);
@@ -296,7 +295,6 @@ const updatePet = async (req,res) =>{
             });
 
     }catch (error) {
-        console.log(error)
         res.status(500).json({
             ok: false,
             msg: "Error inesperado...., llame a su administrador"
